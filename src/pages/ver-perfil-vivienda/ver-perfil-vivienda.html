@@ -1,0 +1,107 @@
+<ion-header>
+
+  <ion-navbar color="primary"></ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <!-- PARA TENER EL CONTENIDO SIEMPRE EN EL CENTRO DE LA PANTALLA -->
+  <ion-grid style="height: 100%">
+    <ion-row justify-content-center align-items-center style="height: 100%">
+
+      <!-- EL CONTENIDO -->
+      <!-- LA CODIFICACION DE LA VIVIENDA -->
+      <div class="contenedor-vivienda centrar-hor" (click)="editarCodificacion()">
+        <img [src]="(objVivienda?.familia) ? 'assets/imgs/home-green.png' :
+            'assets/imgs/home-yellow.png'">
+        <div class="contenedor-codificacion">
+          <ion-badge>{{objVivienda?.codificacion}}</ion-badge>
+        </div>
+      </div>
+
+      <form [formGroup]="formularioVivienda" margin-vertical>
+        <!-- CAMPO DE LA FAMILIA -->
+        <ion-item>
+          <ion-icon name="people" item-start color="celeste"></ion-icon>
+          <ion-label floating>Familia</ion-label>
+          <ion-input type="text" [readonly]="!seEstaEditando"
+              formControlName="familia"
+              [class.invalid]="!formularioVivienda.controls.familia.valid &&
+              (formularioVivienda.controls.familia.dirty || intentoIngresar)">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="formularioVivienda.controls.familia.dirty && intentoIngresar"
+            [class.error]="formularioVivienda.controls.familia.dirty">
+          {{error_familia}}
+        </p>
+
+        <!-- CAMPO DE LA DIRECCION -->
+        <ion-item>
+          <ion-icon name="home" item-start color="naranja"></ion-icon>
+          <ion-label floating>Direccion</ion-label>
+          <ion-input type="text" [readonly]="!seEstaEditando"
+              formControlName="direccion"
+              [class.invalid]="!formularioVivienda.controls.direccion.valid &&
+              (formularioVivienda.controls.direccion.dirty || intentoIngresar)">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="formularioVivienda.controls.direccion.dirty && intentoIngresar"
+            [class.error]="formularioVivienda.controls.direccion.dirty">
+          {{error_direccion}}
+        </p>
+
+        <!-- CAMPO DEL TELEFONO -->
+        <ion-item>
+          <ion-icon name="call" item-start color="verde"></ion-icon>
+          <ion-label floating>Telefono 1</ion-label>
+          <ion-input type="number" [readonly]="!seEstaEditando"
+              formControlName="telefono"
+              [class.invalid]="!formularioVivienda.controls.telefono.valid &&
+              (formularioVivienda.controls.telefono.dirty || intentoIngresar)">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="formularioVivienda.controls.telefono.dirty && intentoIngresar"
+            [class.error]="formularioVivienda.controls.telefono.dirty">
+          {{error_telefono}}
+        </p>
+
+        <!-- CAMPO DEL TELEFONO 2 -->
+        <ion-item>
+          <ion-icon name="call" item-start color="verde"></ion-icon>
+          <ion-label floating>Telefono 2</ion-label>
+          <ion-input type="number" [readonly]="!seEstaEditando"
+              formControlName="celular"
+              [class.invalid]="!formularioVivienda.controls.celular.valid &&
+              (formularioVivienda.controls.celular.dirty || intentoIngresar)">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="formularioVivienda.controls.celular.dirty && intentoIngresar"
+            [class.error]="formularioVivienda.controls.celular.dirty">
+          {{error_celular}}
+        </p>
+      </form>
+      <!-- FIN DEL CONTENIDO -->
+
+    </ion-row>
+  </ion-grid>
+
+</ion-content>
+
+
+<ion-footer no-border>
+
+  <div text-center margin>
+    <button ion-button icon-start (click)="verFamiliares()">
+      <ion-icon name="book"></ion-icon>
+      Integrantes
+    </button>
+    <button ion-button icon-start  (click)="editar()">
+      <img height="100%" [src]="textoGuardarEditar === 'guardar' ?
+          'assets/imgs/disquette-transparent.png' : 'assets/imgs/round-edit.png'">
+      {{textoGuardarEditar}}
+    </button>
+  </div>
+
+</ion-footer>

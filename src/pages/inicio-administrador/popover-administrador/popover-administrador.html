@@ -1,0 +1,10 @@
+<ion-list no-margin class="{{global.state['theme']}}">
+  <button ion-item (click)="gestionar()"
+      *ngIf="objRol?.nombre_rol == 'Super Administrador'">
+    Gestionar perfiles
+  </button>
+  <cambiar-tema></cambiar-tema>
+  <button ion-item (click)="cerrarSesion()" id="btnCerrarSesion">
+    Cerrar sesion
+  </button>
+</ion-list>

@@ -1,0 +1,49 @@
+page-ver-perfil-propietario {
+
+  .gris {
+    color: #9c9c9c;
+  }
+
+  ion-row > ion-col > cambiar-tema > ion-item > div {
+    // margin: 16px 0 !important;
+    border: 0 !important;
+  }
+
+  ion-row {
+    margin: 0 !important;
+    border-bottom: 1px solid #dedede;
+  }
+
+  .item-pefil-usuario {
+    background: #ffffff;
+  }
+
+  .sin-borde-inferior {
+    border-bottom: 0;
+  }
+
+  ion-row > ion-col > ion-item > div {
+    border: 0 !important;
+  }
+
+  #ion-row-perfil-logo {
+    height: 100%;
+    border-bottom: 0;
+    background: #fff;
+  }
+
+  #ion-row-perfil-info {
+    height: 100%;
+    border-bottom: 0;
+    background: #fff;
+  }
+
+  * {
+    white-space: nowrap;
+  }
+
+  // ion-row > ion-col > cambiar-tema > ion-item > div > ion-toggle {
+  //   background-color: transparent !important;
+  // }
+
+}

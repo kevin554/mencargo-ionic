@@ -1,0 +1,87 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>
+      {{hayQueRegistrarSalida ? 'Registrar salida' : 'Visitas'}}
+    </ion-title>
+  </ion-navbar>
+  <cabecera-ampliable [scrollArea]="myContent" headerHeight="98">
+    <!-- EL FILTRO DE FECHA -->
+    <ion-item padding-horizontal class="expandible">
+      <ion-icon name="calendar" item-start></ion-icon>
+      <ion-datetime [(ngModel)]="fecha" (ionChange)="cargarVisitas()"
+          min="2018"
+          displayFormat="DD de MMMM del YYYY" pickerFormat="DD MMM YYYY"
+          doneText="listo" cancelText="cancelar">
+      </ion-datetime>
+    </ion-item>
+    <!-- EL BUSCADOR -->
+    <ion-item padding-horizontal class="expandible">
+      <ion-label>buscar</ion-label>
+      <ion-input type="text" [(ngModel)]="busqueda"></ion-input>
+      <ion-icon name="search" item-end (click)="buscarVisitas()"></ion-icon>
+    </ion-item>
+
+  </cabecera-ampliable>
+  <!-- LA CABECERA (TRANSPARENTE) -->
+  <ion-grid class="cabecera-visitas">
+    <ion-row>
+      <ion-col (click)="ordenar('hora_ingreso')">Hora ingreso</ion-col>
+      <ion-col (click)="ordenar('invitado_nombre')">Nombre</ion-col>
+      <ion-col (click)="ordenar('vivienda')" text-center>Casa</ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-header>
+
+
+<ion-content #myContent fullscreen>
+
+  <!-- LA LISTA DE VISITAS -->
+  <ion-list>
+    <ng-container *ngFor="let visita of visitas">
+      <ion-item-sliding *ngIf="(!hayQueRegistrarSalida && visita.hora_ingreso != 'None') ||
+          (hayQueRegistrarSalida && visita.hora_salida == 'None' && visita.hora_ingreso != 'None')" #slidingItem>
+        <!-- LA FORMA EN CÓMO SE VISUALIZARÁ LA VISITA -->
+        <ion-item (click)="verVisita(visita)">
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <p>
+                  {{obtenerHora(visita.hora_ingreso) ? obtenerHora(visita.hora_ingreso) : '---' }}
+                </p>
+              </ion-col>
+              <ion-col>
+                <p>{{visita.invitado_nombre}} {{visita.invitado_apellido}}</p>
+              </ion-col>
+              <ion-col>
+                <p text-center>
+                  {{visita.vivienda != 'N' ? visita.vivienda : ''}} - {{visita.familia}}
+                </p>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <!-- DESLIZAR PARA REGISTRAR LA SALIDA -->
+        <ion-item-options side="right" *ngIf="hayQueRegistrarSalida">
+          <button ion-button icon-only color="danger"
+              (click)="confirmarRegistrarSalida(visita, slidingItem)">
+            <ion-icon name="log-out"></ion-icon>
+          </button>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ng-container>
+  </ion-list>
+
+  <!-- EMPTY STATE PARA LA FALTA DE CONEXION  -->
+  <empty-state *ngIf="noHayConexion" [img]="'assets/imgs/cloud-off.png'">
+  </empty-state>
+
+  <!-- EMPTY STATE PARA CUANDO LA LISTA DE VISITAS ESTÁ VACIA -->
+  <empty-state *ngIf="!visitas || visitas?.length === 0"
+      [img]="'assets/imgs/users-group.png'"
+      [error]="'No hay visitas registradas en esta fecha'">
+  </empty-state>
+
+</ion-content>

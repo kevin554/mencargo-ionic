@@ -1,0 +1,46 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title></ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <h1>{{objVisita?.invitado_nombre}}</h1>
+  <h2>{{objVisita?.invitado_ci == 0 ? 'Sin carnet registrado' : objVisita?.invitado_ci}}</h2>
+  <hr>
+
+  <!-- LA CABECERA (TRANSPARENTE) -->
+  <ion-grid>
+    <ion-row>
+      <ion-col text-center>Fecha</ion-col>
+      <ion-col text-center>Hora ingreso</ion-col>
+      <ion-col text-center>Casa</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- LA LISTA DE VISITAS -->
+  <ion-list margin-top>
+    <!-- LA FORMA EN CÓMO SE VISUALIZARÁ LA VISITA -->
+    <ion-item *ngFor="let visita of lista">
+      <ion-grid>
+        <ion-row>
+          <ion-col text-wrap>{{obtenerFecha(visita.fecha_invitacion)}}</ion-col>
+          <ion-col>
+            {{obtenerHora(visita.hora_ingreso) ?
+              obtenerHora(visita.hora_ingreso) : '---' }}
+            </ion-col>
+          <ion-col>
+            <p text-center>
+              {{visita.vivienda != 'N' ? visita.vivienda : ''}} - {{visita.familia}}
+            </p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

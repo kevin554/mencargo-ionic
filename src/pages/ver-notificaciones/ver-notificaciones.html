@@ -1,0 +1,48 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Notificaciones</ion-title>
+  </ion-navbar>
+  <ion-grid class="cabecera-visitas">
+    <ion-row>
+      <ion-col col-4 text-center>Fecha</ion-col>
+      <ion-col>Mensaje</ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-header>
+
+
+<ion-content>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let notificacion of notificaciones; let i = index"
+        #slidingItem>
+      <!-- LA FORMA EN CÓMO SE VISUALIZARÁ LA NOTIFICACION -->
+      <ion-item (click)="verNotificacion(notificacion)">
+        <ion-grid>
+          <ion-row>
+            <ion-col col-4 text-center>
+              <p [class.negrita]="notificacion.fecha_lectura == 'None'">
+                {{obtenerSoloFecha(notificacion.fecha_notificacion)}}
+              </p>
+            </ion-col>
+            <ion-col col-8>
+              <p [class.negrita]="notificacion.fecha_lectura == 'None'">
+                {{notificacion.mensaje}}
+              </p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+      <!-- DESLIZAR PARA ELIMINAR -->
+      <ion-item-options side="right">
+        <button ion-button icon-only color="danger"
+            (click)="eliminar(i, slidingItem)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+</ion-content>

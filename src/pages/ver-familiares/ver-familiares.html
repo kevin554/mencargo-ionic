@@ -1,0 +1,67 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Familiares</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="irAlInicio()">
+        <ion-icon name="home"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
+  <empty-state *ngIf="noHayConexion && (!familiares && !cantidadQrDisponibles)"
+      [img]="'assets/imgs/cloud-off.png'"
+      [error]="'parece que no tenés conexion'"
+      [posibleSolucion]="'deslizá desde arriba para actualizar'">
+  </empty-state>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let familiar of familiares; let i = index">
+      <ion-item>
+        <ion-icon name="person" item-start [color]="familiar.activo ? 'celeste'
+            : 'dark'">
+        </ion-icon>
+        <h2 class="fam-nombre">{{familiar.nombre}} {{familiar.apellido}}</h2>
+        <ion-icon name="settings" item-end (click)="desplegarMenu($event, familiar)"></ion-icon>
+      </ion-item>
+
+      <!-- deslizar para eliminar -->
+      <ion-item-options side="right">
+        <button ion-button icon-only color="danger"
+            (click)="confimarEliminar(i)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <!-- los espacios disponibles -->
+    <ion-item-sliding *ngFor="let espacioDisponible of cantidadQrDisponibles">
+      <ion-item (click)="registrarFamiliar()">
+        <ion-icon name="person" item-start color="dark"></ion-icon>
+        <h2>Vacio</h2>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab bottom right margin-vertical *ngIf="!hayQrDisponibles()">
+    <button ion-fab (click)="registrarFamiliar()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+</ion-content>

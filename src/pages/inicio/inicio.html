@@ -1,0 +1,50 @@
+<ion-header>
+
+  <ion-navbar color="primary"></ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding fullscreen>
+
+  <img src="assets/imgs/portada_mencargo.png" class="centrar-hor"
+      margin-vertical padding-vertical>
+
+  <ion-grid>
+    <!-- administracion -->
+    <ion-row>
+      <!-- centrar-hor para tener la columna en el centro de la fila -->
+      <ion-col col-9 class="centrar-hor">
+        <ion-card (tap)="ingresoAdm()">
+          <!-- button e ion-item se usa para dar la sensacion de toque
+              en un ion-card -->
+          <button ion-item detail-none>
+            <ion-item text-center style="background: rgba(0,0,0,0)">
+              <ion-icon name="people" class="icono"></ion-icon>
+              <p>Administracion</p>
+            </ion-item>
+          </button>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <!-- propietario -->
+    <ion-row>
+      <ion-col col-9 class="centrar-hor">
+        <ion-card (tap)="ingresoPropietario()">
+          <!-- button e ion-item se usa para dar la sensacion de toque
+              en un ion-card -->
+          <button ion-item detail-none>
+            <ion-item text-center style="background: rgba(0,0,0,0)">
+              <ion-icon name="person" class="icono"></ion-icon>
+              <p>Propietario</p>
+            </ion-item>
+          </button>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <swal #alertaEstadoIngreso title="credencial incorrecto" type="error"></swal>
+
+</ion-content>

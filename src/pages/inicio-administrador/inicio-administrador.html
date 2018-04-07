@@ -1,0 +1,84 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>{{objCondominio?.nombre_condominio}}</ion-title>
+    <ion-buttons start>
+      <button ion-button icon-only (click)="desplegarMenu($event)">
+        <ion-icon name="more"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <centrar-componente>
+
+    <img src="assets/imgs/mencargo.png" alt="logo y marca" id="logo-mencargo"
+        class="centrar-hor" padding-vertical>
+
+    <ion-grid text-center>
+
+      <ion-row *ngIf="puede('Registrar Ingreso')">
+        <!-- registro de ingreso -->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Registrar Ingreso')">
+          <div>
+            <img [src]="fueTocado('Registrar Ingreso') ?
+                'assets/imgs/qr-code-blue.png' :
+                'assets/imgs/qr-code-orange.png'"/>
+            <p>Registro de ingreso</p>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <!-- viviendas -->
+        <ion-col col-5 class="centrar-hor" *ngIf="puede('Ver Viviendas')"
+            (tap)="tap('Ver Viviendas')">
+          <div>
+            <img [src]="fueTocado('Ver Viviendas') ?
+                'assets/imgs/round-house-orange.png' :
+                'assets/imgs/round-house-blue.png'"/>
+            <p>Viviendas</p>
+          </div>
+        </ion-col>
+        <!-- visitas -->
+        <ion-col col-5 class="centrar-hor" *ngIf="puede('Ver Visitas')"
+            (tap)="tap('Ver Visitas')">
+          <div>
+            <img [src]="fueTocado('Ver Visitas') ?
+                'assets/imgs/round-people-orange.png' :
+                'assets/imgs/round-people-blue.png'">
+            <p>Visitas</p>
+          </div>
+        </ion-col>
+        <!-- solicitud de ingreso -->
+        <ion-col col-5 class="centrar-hor" *ngIf="puede('Registrar Ingreso')"
+            (tap)="tap('Solicitud de Ingreso')">
+          <div>
+            <img [src]="fueTocado('Solicitud de Ingreso') ?
+                'assets/imgs/round-pencil-orange.png' :
+                'assets/imgs/round-pencil-blue.png'"/>
+            <p>Registro manual</p>
+          </div>
+        </ion-col>
+        <!-- registro de salida -->
+        <ion-col col-5 class="centrar-hor" *ngIf="puede('Registrar Salida')"
+            (tap)="tap('Registrar Salida')">
+          <div>
+            <img [src]="fueTocado('Registrar Salida') ?
+                'assets/imgs/round-exit-orange.png' :
+                'assets/imgs/round-exit-blue.png'"/>
+            <p>Registro de salida</p>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </centrar-componente>
+
+  <swal #alertaEstadoIngreso title type></swal>
+
+</ion-content>

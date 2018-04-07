@@ -1,0 +1,43 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Viviendas</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <h3 text-center>{{objCondominio?.nombre_condominio}}</h3>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col *ngFor="let vivienda of viviendas" col-4 col-md-3 col-lg-2
+          text-center margin-vertical (click)="verVivienda(vivienda)">
+        <img [src]="vivienda.familia ? 'assets/imgs/home-green.png' :
+            'assets/imgs/home-yellow.png'" alt="vivienda" padding
+            style="padding-bottom: 8px">
+        <ion-badge>{{vivienda.codificacion}}<br>{{vivienda.familia}}</ion-badge>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
+  <empty-state *ngIf="noHayConexion" [img]="'assets/imgs/cloud-off.png'"></empty-state>
+
+  <!-- EMPTY STATE PARA CUANDO EL CONDOMINIO NO TIENE CASAS REGISTRADAS -->
+  <empty-state *ngIf="viviendas?.length === 0"
+      [img]="'assets/imgs/neighborhood.png'"
+      [error]="'no hay viviendas registradas'">
+  </empty-state>
+
+</ion-content>

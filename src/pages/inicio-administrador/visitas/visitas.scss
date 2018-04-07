@@ -1,0 +1,49 @@
+page-visitas {
+
+  .menu-dotted {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    color: #aaaaaa;
+    box-shadow: none;
+  }
+
+  .nombre {
+    font-weight: bold;
+    font-size: 17px;
+  }
+
+  .cel {
+    font-weight: bold;
+    color: #45a744;
+  }
+
+  .centrar {
+    height: 100%;
+    display: block;
+    vertical-align: middle;
+  }
+
+  // ion-header > ion-grid {
+  //   // opacity: 0.7;
+  //   opacity: 1;
+  // }
+
+  .expandible {
+    transition: 0.2s linear;
+  }
+
+  ion-item {
+    padding-left: 0 !important;
+  }
+
+  .input-wrapper {
+    padding-left: 16px;
+  }
+
+  ion-icon {
+    padding-left: 16px;
+  }
+
+}

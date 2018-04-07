@@ -1,0 +1,100 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>
+      Hola {{objPropietario?.nombre}}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="desplegarMenu($event)">
+        <ion-icon name="more"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <ion-fab >
+    <img src="assets/imgs/portada_mencargo.png" style="width: 50%">
+  </ion-fab>
+
+  <centrar-componente>
+
+    <div class="centrar-hor" id="espacio-vacio"></div>
+    <div class="centrar-hor" id="espacio-vacio"></div>
+
+    <ion-grid text-center> <!-- text-center para centrar -->
+      <ion-row>
+        <!-- CONTACTOS -->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Contactos')">
+          <div>
+            <img [src]="fueTocado('Contactos') ?
+                'assets/imgs/round-phone-book-orange.png' :
+                'assets/imgs/round-phone-book-blue.png'">
+            <p>Contactos</p>
+          </div>
+        </ion-col>
+        <!-- ENVIAR INVITACION -->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Enviar Invitacion')">
+          <div>
+            <img [src]="fueTocado('Enviar Invitacion') ?
+                'assets/imgs/round-sent-mail-orange.png' :
+                'assets/imgs/round-sent-mail-blue.png'">
+            <p>Enviar invitacion</p>
+          </div>
+        </ion-col>
+        <!-- CREAR EVENTO -->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Crear Evento')">
+          <div>
+            <img [src]="fueTocado('Crear Evento') ?
+                'assets/imgs/round-group-orange.png' :
+                'assets/imgs/round-group-blue.png'">
+            <p>Crear evento</p>
+          </div>
+        </ion-col>
+        <!-- NOTIFICACIONES
+          ng-click="animarBotonNotificacion=!animarBotonNotificacion"
+          [ngClass]="{'ta-da': animarBotonNotificacion, '': !animarBotonNotificacion}"
+
+          [ngClass]="{'ta-da' : animarBotonNotificacion}"
+          [ngClass]="{'' : !animarBotonNotificacion}"
+
+
+
+        [ngClass]="{'ta-da': animarBotonNotificacion, 'bounce': !animarBotonNotificacion}"
+      [ngClass]="{'ta-da': animarBotonNotificacion, 'quitar-animacion': !animarBotonNotificacion}"
+    [class.ta-da]="animarBotonNotificacion"
+  [class.ta-da]="animarBotonNotificacion" [class.ta-da]="!animarBotonNotificacion"
+[ngClass]="{'ta-da': animarBotonNotificacion, 'ta-da-again': !animarBotonNotificacion}"
+-->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Notificaciones', animar)" #animar
+            [class.ta-da]="animarBotonNotificacion" [class.swing]="!animarBotonNotificacionOtraVez"
+            >
+          <div>
+              <ion-badge class="contador-notificaciones" color="secundario"
+                  *ngIf="contadorNotificaciones > 0">
+                {{contadorNotificaciones}}
+              </ion-badge>
+              <img [src]="fueTocado('Notificaciones') ?
+                  'assets/imgs/round-notification-orange.png' :
+                  'assets/imgs/round-notification-blue.png'">
+              <p>Notificaciones</p>
+          </div>
+        </ion-col>
+        <!-- SOPORTE TECNICO -->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Soporte Tecnico')">
+          <div>
+            <img [src]="fueTocado('Soporte Tecnico') ?
+                'assets/imgs/round-support-orange.png' :
+                'assets/imgs/round-support-blue.png'">
+            <p>Soporte tecnico</p>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </centrar-componente>
+
+</ion-content>

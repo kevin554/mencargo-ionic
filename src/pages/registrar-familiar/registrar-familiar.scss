@@ -1,0 +1,35 @@
+page-registrar-familiar {
+
+  form {
+    padding-top: 0;
+  }
+
+  ion-select {
+    max-width: 100% !important;
+  }
+
+  .contenedor-vivienda {
+    width: 35%;
+    position: relative;
+
+    img {
+      padding-bottom: 8px;
+    }
+  }
+
+  .contenedor-codificacion {
+    position: absolute;
+    top: 35%;
+    width: 100%;
+    text-align: center;
+  }
+
+  ion-select {
+    background: transparent !important;
+  }
+
+  .select-text {
+    color: #000 !important;
+  }
+
+}

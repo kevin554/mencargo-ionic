@@ -1,0 +1,89 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Mi Perfil</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content style="background: #efefef">
+
+  <!-- EL LOGO DE MENCARGO -->
+  <ion-grid style="height: 100%; padding: 0; position: absolute; opacity: 0.2; background: #fff">
+    <ion-row justify-content-center align-items-center id="ion-row-perfil-logo">
+      <img src="assets/imgs/portada_mencargo.png" alt="">
+    </ion-row>
+  </ion-grid>
+
+  <!-- EL PERFIL DEL PROPIETARIO -->
+  <!-- PARA CENTRAR EL CONTENIDO -->
+  <ion-grid style="height: 100%; padding: 0; background: #fff">
+    <ion-row justify-content-center align-items-center id="ion-row-perfil-info">
+      <!-- EL CONTENIDO -->
+      <div style="width: 100%">
+        <h1 text-center class="negrita">
+          {{objFamiliar.nombre}} {{objFamiliar.apellido ? objFamiliar.apellido : ''}}
+        </h1>
+
+        <ion-row class="item-pefil-usuario" padding>
+          <ion-col col-1>
+            <ion-icon name="call" color="rojo"></ion-icon>
+          </ion-col>
+          <ion-col col-4 class="gris">CELULAR</ion-col>
+          <ion-col col-7><b>{{objFamiliar.celular}}</b></ion-col>
+        </ion-row>
+
+        <ion-row class="item-pefil-usuario" padding>
+          <ion-col col-1>
+            <ion-icon name="mail" color="naranja"></ion-icon>
+          </ion-col>
+          <ion-col col-4 class="gris">CORREO</ion-col>
+          <ion-col col-7><b>{{objFamiliar.correo}}</b></ion-col>
+        </ion-row>
+
+        <ion-row class="item-pefil-usuario" padding style="border-bottom: 0">
+          <ion-col col-1>
+            <ion-icon name="create" color="verde"></ion-icon>
+          </ion-col>
+          <ion-col col-4 class="gris">CI</ion-col>
+          <ion-col col-7><b>{{objFamiliar.ci}}</b></ion-col>
+        </ion-row>
+
+        <ion-row padding-horizontal class="sin-borde-inferior">
+          <ion-col>
+            <h3><strong>Ajustes</strong></h3>
+          </ion-col>
+        </ion-row>
+
+        <ion-row style="border-bottom: 0">
+          <ion-col style="padding: 0; border-bottom: 1px solid #dedede;">
+            <cambiar-tema></cambiar-tema>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="sin-borde-inferior">
+          <ion-col style="padding: 0">
+            <ion-item>
+              <ion-label>Modo seguro</ion-label>
+              <ion-toggle (ionChange)="cambiarModoSeguro($event)"
+                  [(ngModel)]="modoSeguro">
+              </ion-toggle>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </div>
+      <!-- FIN DEL CONTENIDO -->
+    </ion-row>
+  </ion-grid>
+
+</ion-content>
+
+
+<ion-footer no-border text-center style="background: #fff">
+
+  <button ion-button margin (click)="cerrarSesion()" id="btnCerrarSesion">
+    Cerrar sesión
+  </button>
+
+</ion-footer>

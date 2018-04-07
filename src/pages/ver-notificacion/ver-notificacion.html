@@ -1,0 +1,39 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title></ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <centrar-componente>
+    <h1 text-center>¿Ha llegado su visita a su domicilio?</h1>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6 text-center>
+          <img src="assets/imgs/error.png" alt="no"
+              style="max-width: 50%" (click)="no()">
+        </ion-col>
+        <ion-col col-6 text-center>
+          <img src="assets/imgs/success.png" alt="si"
+              style="max-width: 50%" (click)="si()">
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <h5>Note que si marca X, la porteria será alertada de inmediato. Si ignora
+      este aviso, se asumirá que su visita ha llegado a su casa</h5>
+  </centrar-componente>
+
+</ion-content>
+
+
+<ion-footer no-border text-center padding>
+
+  <img src="assets/imgs/mencargo.png" alt="mencargo" style="width: 25%">
+
+</ion-footer>

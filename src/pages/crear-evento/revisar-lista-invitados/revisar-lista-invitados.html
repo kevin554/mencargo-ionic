@@ -1,0 +1,31 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Lista de invitados</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="irAlInicio()">
+        <ion-icon name="home"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <h1>{{objEvento?.nombre}}</h1>
+
+  <ion-list>
+    <ion-item *ngFor="let invitado of invitados">
+      {{invitado.nombre}}
+    </ion-item>
+  </ion-list>
+
+  <ion-fab right bottom>
+    <button ion-fab (click)="confirmarEvento()">
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
+
+</ion-content>

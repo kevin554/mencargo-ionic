@@ -1,0 +1,40 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Gestionar</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="desplegarMenu($event)">
+        <ion-icon name="more"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list>
+    <ion-item *ngFor="let item of lista" style="border-bottom: 1px solid #dedede">
+      <h2 item-left>{{item.usuario.nombre}}</h2>
+      <h3 item-right>{{item.rol.nombre_rol}}</h3>
+      <ion-icon item-end name="settings" (click)="verPermisos(item)"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <empty-state *ngIf="lista?.length === 0"
+      [img]="'assets/imgs/warning-sign.png'"
+      [error]="'No hay usuarios registrados'"
+      [posibleSolucion]="'Los usuarios se crean desde la web'">
+  </empty-state>
+
+</ion-content>

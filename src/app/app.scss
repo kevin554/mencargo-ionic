@@ -14,3 +14,185 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+@import '../theme/animaciones';
+@import "../theme/tema.claro";
+@import "../theme/tema.oscuro";
+
+.centrar-hor {
+  margin: 0 auto;
+  display: block;
+}
+
+// para resaltar un campo de un formulario
+.invalid {
+  border: 1px solid #ea6153;
+}
+
+// para mostrar un error en un campo de un formulario
+.error {
+  color: #ea6153;
+  margin: 5px 0;
+  font-size: 12px;
+}
+
+ion-item.item-input, ion-item.item-select, ion-item.item-datetime {
+  padding-left: 0;
+}
+
+.sin-sombra {
+  box-shadow: none;
+}
+
+// .highlight {
+//   background-color: #f4f4f4;
+// }
+
+.vertical-center {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.negrita {
+  font-weight: bold;
+}
+
+// .top-radius {
+//   border-radius: 10% 10% 0 0;
+// }
+//
+// .bottom-radius {
+//   border-radius: 0 0 10% 10%;
+// }
+//
+// .round {
+//   border-radius: 50%;
+// }
+
+// .transparent-header {
+//   // This is just to make the header transparent and button/icon with white color
+//   .toolbar-content,
+//   .back-button {
+//     color: white;
+//   }
+//   .toolbar-background,
+//   ion-navbar,
+//   ion-header {
+//     background: transparent !important;
+//     background-color: transparent !important;
+//   }
+//   .header-md::after,
+//   .toolbar-background-ios {
+//     background-image: none;
+//     border-bottom: 0;
+//   }
+//   .header-ios .toolbar-background-ios,
+//   .footer-ios .toolbar-background-ios {
+//     border: 0;
+//   }
+//   // ---
+// }
+
+// // right side menu
+// #menu-right {
+//   button {
+//     padding-left: 16px;
+//   }
+//   ion-content {
+//     background: rgba(255, 36, 36, 0.82);
+//   }
+//   .menu-inner {
+//     width: 10vh;
+//   }
+//   @media screen and (orientation: landscape) {
+//     .menu-inner {
+//       width: 15vh;
+//     }
+//   }
+//   .active-menu-item {
+//     position: absolute;
+//     border-top: 6px solid transparent;
+//     border-bottom: 6px solid transparent;
+//     border-left: 6px solid #ffffff;
+//   }
+//   .label {
+//     display: flex;
+//     align-items: center;
+//   }
+//   .list-md[no-lines] .item-block,
+//   .list-md[no-lines] ion-item-options,
+//   .list-md[no-lines] .item .item-inner,
+//   .list-ios[no-lines] .item-block,
+//   .list-ios[no-lines] ion-item-options,
+//   .list-ios[no-lines] .item .item-inner {
+//     padding: .3rem 0;
+//     background: transparent;
+//     color: white;
+//   }
+//   ion-icon {
+//     line-height: 1;
+//   }
+// }
+
+// .icon-badge {
+//   top: 0px;
+//   right: 0px;
+//   background: #FF5D5D;
+//   color: white;
+//   font-size: 12px;
+//   position: absolute;
+//   padding: 5px 8px;
+//   border-radius: 15px;
+// }
+
+// // Sidemenu with avatar
+// #menu-avatar {
+//   .user-avatar {
+//     padding: .5em;
+//   }
+//   h3,
+//   .label {
+//     color: white;
+//     font-weight: bold;
+//   }
+//   .item {
+//     background: transparent;
+//   }
+//   ion-content {
+//     background: linear-gradient(48deg, rgba(157, 72, 173, 0.8) 0%, rgba(157, 72, 173, 0.86) 28%, rgba(0, 168, 168, 0.98) 93%, rgba(0, 168, 168, 1) 100%);
+//   }
+//   .menu-inner {
+//     background: rgba(255, 255, 255, .3);
+//   }
+// }
+
+// // Material Design Sidemenu
+// #menu-material {
+//   .menu-header {
+//     padding: 5px 15px;
+//     background-image: url('../assets/img/misc/material-design-background.jpg');
+//     background-size: cover;
+//     color: white;
+//     .name {
+//       font-weight: 500;
+//       margin-bottom: 3px;
+//     }
+//     .e-mail {
+//       margin-top: 0;
+//       margin-bottom: 5px;
+//     }
+//   }
+//   .user-avatar {
+//     padding: .5em;
+//     height: 12vh;
+//   }
+//   h3,
+//   .label,
+//   {
+//     color: #999;
+//     font-weight: 400;
+//   }
+//   ion-icon {
+//     color: #777;
+//   }
+// }

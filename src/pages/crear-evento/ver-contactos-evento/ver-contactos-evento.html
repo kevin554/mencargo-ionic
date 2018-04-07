@@ -1,0 +1,30 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Lista de contactos</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <button ion-button class="centrar-hor">Agregar Contacto</button>
+
+  <ion-list>
+    <ion-item *ngFor="let contacto of contactos" margin-vertical style="padding-left: 0px !important"
+        (click)="seleccionarContacto(contacto)">
+      <ion-icon name="checkmark" item-end color="primary"
+          *ngIf="contacto.seleccionado">
+      </ion-icon>
+      {{contacto.nombre}}
+    </ion-item>
+  </ion-list>
+
+  <ion-fab right bottom>
+    <button ion-fab (click)="revisarListaInvitados()">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-fab>
+
+</ion-content>

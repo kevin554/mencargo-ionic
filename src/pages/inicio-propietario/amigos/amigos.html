@@ -1,0 +1,67 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Amigos</ion-title>
+    <!-- <ion-buttons start>
+      <button ion-button (click)="importarAmigos()">
+        Importar amigos
+      </button>
+    </ion-buttons> -->
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- LA LISTA DE AMIGOS -->
+  <ion-list margin-top>
+    <ion-item-sliding *ngFor="let amigo of amigos; let i = index" #slidingItem>
+      <!-- LA FORMA EN CÓMO SE VISUALIZARÁ EL AMIGO -->
+      <ion-item (click)="cargarDatos(amigo)">
+        <p class="nombre">{{amigo.nombre}} {{amigo.apellido}}</p>
+        <img id="img-enviar-invitacion" src="assets/imgs/sent-mail-white.png"
+            alt="enviar" float-right item-end (click)="enviarInvitacion(amigo)">
+      </ion-item>
+
+      <!-- DESLIZAR PARA ELIMINAR -->
+      <ion-item-options side="right" *ngIf="!hayQueInvitar">
+        <button ion-button icon-only color="danger"
+            (click)="confirmarEliminarAmigo(i, slidingItem)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- BOTON PARA AGREGAR AMIGOS -->
+  <ion-fab bottom right margin-vertical>
+    <button ion-fab (click)="agregarAmigo()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
+  <empty-state *ngIf="noHayConexion && !amigos"
+      [img]="'assets/imgs/cloud-off.png'"
+      [error]="'hubo un error al establecer la conexion'"
+      [posibleSolucion]="'deslizá para actualizar'">
+  </empty-state>
+
+  <!-- EMPTY STATE PARA CUANDO LA LISTA DE AMIGOS ESTÁ VACIA -->
+  <empty-state *ngIf="amigos?.length === 0"
+      [img]="'assets/imgs/group-of-men.png'"
+      [error]="'Parece que no tenes ningun amigo registrado'"
+      [posibleSolucion]="'Agrega uno'">
+  </empty-state>
+
+</ion-content>

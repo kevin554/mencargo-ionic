@@ -1,0 +1,34 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Crear evento</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content >
+
+  <form [formGroup]="formuRegEv" >
+    <ion-item padding-horizontal>
+      <ion-label floating>Nombre del evento:</ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+
+    <ion-item padding-horizontal>
+      <ion-icon name="calendar" item-start></ion-icon>
+      <ion-datetime formControlName="inicio"
+           min="2018"
+          displayFormat="DD de MMMM del YYYY" pickerFormat="DD MMM YYYY"
+          doneText="listo" cancelText="cancelar">
+      </ion-datetime>
+    </ion-item>
+  </form>
+
+  <ion-fab right bottom>
+    <button ion-fab (click)="validarFormulario()">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-fab>
+
+</ion-content>

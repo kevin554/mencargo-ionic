@@ -1,0 +1,127 @@
+.tema-oscuro {
+
+  background-color: #303030;
+
+  h1, h2, h3, h4, h5, h6, p, .toolbar-title, .bar-button-default, body, div {
+    color: white;
+  }
+
+  .onboard {
+    border-color: #212121 !important;
+  }
+
+  .toolbar-background {// , .toggle-checked {
+    background-color: #212121 !important;
+  }
+
+  ion-content, .input-wrapper, .item-inner, .item, ion-footer, ion-item, ion-label {
+    background-color: #303030 !important;
+    background: #303030 !important;
+    color: white !important;
+  }
+
+  ion-list {
+    background-color: #100815;
+  }
+
+  .time {
+    background-color: white;
+  }
+
+  .item {
+    background-color: #100815;
+    color: white;
+  }
+
+  .range-bar {
+    background-color: #463E3F !important;
+  }
+
+  .s2, .s3, .toggle-inner, .range-pin, .range-pin::before, .range-knob, .range-bar-active {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  ion-card {
+    background-color: #303030 !important;
+  }
+
+  .item-pefil-usuario {
+    background: #303030
+  }
+
+  #btnCerrarSesion {
+    background-color: #f26920;
+  }
+
+  #ion-row-perfil-logo {
+    background: #303030;
+  }
+
+  #ion-row-perfil-info {
+    background: #303030;
+  }
+
+  .cabecera-visitas {
+    color: #fff;
+  }
+
+  .destinatario-qr {
+    color: #fff;
+  }
+
+  // el color secundario
+  .checkbox-checked {
+    border-color: #f26920;
+    background-color: #f26920;
+  }
+
+  // el color secundario
+  .toggle-checked .toggle-icon {
+    background-color: #f26920;
+  }
+
+  cambiar-tema {
+    background: #303030 !important;
+    color: #fff !important;
+  }
+
+  hr {
+    background-color: #f26920;
+  }
+
+  // el icono de un familiar sin la app activa será blanco
+  ion-icon[color="dark"] {
+    color: #fff;
+  }
+
+  .alert-md [aria-checked=true] .alert-radio-icon {
+    border-color: #f26920;
+  }
+
+  .alert-md .alert-radio-inner {
+    background-color: #f26920;
+  }
+
+  ion-footer button, ion-content button[ion-button],
+      ion-content button[ion-fab] {
+    background-color: #f26920;
+  }
+
+  // para que no afecte a los sgtes componentes
+  ion-select button, ion-checkbox button, ion-toggle button,
+      ion-datetime button {
+    background-color: transparent !important;
+  }
+
+  button[color="danger"] {
+    background-color: #f53d3d !important;
+  }
+
+  #img-enviar-invitacion {
+    border: 2px solid #f26920;
+    border-radius: 50%;
+    background-color: #f26920;
+  }
+
+}

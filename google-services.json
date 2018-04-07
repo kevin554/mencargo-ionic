@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "120452764810",
+    "firebase_url": "https://qsm-condominios.firebaseio.com",
+    "project_id": "qsm-condominios",
+    "storage_bucket": "qsm-condominios.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120452764810:android:0f74aaf25c44f1d4",
+        "android_client_info": {
+          "package_name": "bo.com.cloudbit.tefor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120452764810-h8p4qom4nu53dhpm2moqqsplvrbui73f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjrHg3ICvzTtkLFTF5Z8Ovy9iHZnV0-Y4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
