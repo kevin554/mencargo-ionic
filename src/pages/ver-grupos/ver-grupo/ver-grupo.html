@@ -1,0 +1,53 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>{{objGrupo?.nombre}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- LA LISTA DE INTEGRANTES -->
+  <ion-list margin-top>
+    <ion-item-sliding *ngFor="let integrante of integrantes; let i = index" #slidingItem>
+      <!-- LA FORMA EN CÓMO SE VISUALIZARÁ EL GRUPO -->
+      <ion-item>
+        <p class="nombre">{{integrante?.nombre_invitado}}</p>
+      </ion-item>
+
+      <!-- DESLIZAR PARA ELIMINAR -->
+      <ion-item-options side="right">
+        <button ion-button icon-only color="danger"
+            (click)="confirmarEliminarIntegrante(i, slidingItem)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- BOTON PARA AGREGAR GRUPO -->
+  <ion-fab bottom right margin-vertical>
+    <button ion-fab (click)="agregarIntegrante()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <!-- EMPTY STATE PARA CUANDO LA LISTA DE AMIGOS ESTÁ VACIA -->
+  <empty-state *ngIf="integrantes?.length === 0"
+      [img]="'assets/imgs/group-of-men.png'"
+      [error]="'Parece que no tenes ningun integrante registrado'"
+      [posibleSolucion]="'Agrega uno'">
+  </empty-state>
+
+</ion-content>

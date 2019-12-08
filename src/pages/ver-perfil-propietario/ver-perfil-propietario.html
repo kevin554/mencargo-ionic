@@ -23,7 +23,7 @@
       <!-- EL CONTENIDO -->
       <div style="width: 100%">
         <h1 text-center class="negrita">
-          {{objFamiliar.nombre}} {{objFamiliar.apellido ? objFamiliar.apellido : ''}}
+          {{objFamiliar?.nombre}} {{objFamiliar?.apellido ? objFamiliar?.apellido : ''}}
         </h1>
 
         <ion-row class="item-pefil-usuario" padding>
@@ -31,7 +31,7 @@
             <ion-icon name="call" color="rojo"></ion-icon>
           </ion-col>
           <ion-col col-4 class="gris">CELULAR</ion-col>
-          <ion-col col-7><b>{{objFamiliar.celular}}</b></ion-col>
+          <ion-col col-7><b>{{objFamiliar?.celular}}</b></ion-col>
         </ion-row>
 
         <ion-row class="item-pefil-usuario" padding>
@@ -39,7 +39,7 @@
             <ion-icon name="mail" color="naranja"></ion-icon>
           </ion-col>
           <ion-col col-4 class="gris">CORREO</ion-col>
-          <ion-col col-7><b>{{objFamiliar.correo}}</b></ion-col>
+          <ion-col col-7><b>{{objFamiliar?.correo}}</b></ion-col>
         </ion-row>
 
         <ion-row class="item-pefil-usuario" padding style="border-bottom: 0">
@@ -47,7 +47,7 @@
             <ion-icon name="create" color="verde"></ion-icon>
           </ion-col>
           <ion-col col-4 class="gris">CI</ion-col>
-          <ion-col col-7><b>{{objFamiliar.ci}}</b></ion-col>
+          <ion-col col-7><b>{{objFamiliar?.ci}}</b></ion-col>
         </ion-row>
 
         <ion-row padding-horizontal class="sin-borde-inferior">
@@ -73,6 +73,7 @@
           </ion-col>
         </ion-row>
       </div>
+
       <!-- FIN DEL CONTENIDO -->
     </ion-row>
   </ion-grid>

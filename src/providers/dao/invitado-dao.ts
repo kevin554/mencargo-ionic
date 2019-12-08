@@ -20,7 +20,7 @@ export class InvitadoDao {
           location: 'default'
         }).then( (db: SQLiteObject) => {
           this.database = db;
-          console.log('creando tabla invitados');
+
           let sentencia = `
             create table if not exists invitados(
               id integer primary key,
@@ -37,7 +37,6 @@ export class InvitadoDao {
                 this.databaseReady.next(true)
               }).catch();
 
-          console.log('tabla invitados creadas')
         });
       });
     }// fin if cordova
@@ -50,23 +49,19 @@ export class InvitadoDao {
           values (?, ?, ?, ?, ?, ?, ?, ?)`;
     let parametros = [invitado.id, invitado.nombre, invitado.apellido, invitado.ci,
       invitado.expedicion, invitado.celular, invitado.fkfamilia, invitado.fkcondominio];
-    console.log('parametros' + JSON.stringify(parametros))
 
     return this.database.executeSql(sentencia, parametros).then( datos => {
       return datos;
     }, err => {
-      console.log('Error: ', err);
       return err;
     })
   }
 
   seleccionarTodas() {
     return this.database.executeSql(`select * from invitados`, []).then( (datos) => {
-      console.log('select from invitados')
       let invitados = [];
 
       if (datos.rows.length > 0) {
-        console.log('hay invitados en local');
         for (var i = 0; i < datos.rows.length; i++) {
           let invitado = datos.rows.item(i);
 
@@ -84,10 +79,8 @@ export class InvitadoDao {
 
       }
 
-      console.log('devuelve las invitados');
       return invitados;
     }, err => {
-      console.log('Error: '+  JSON.stringify(err));
       return [];
     })
   }
@@ -96,12 +89,10 @@ export class InvitadoDao {
     let sentencia = `
       delete from invitados where id = ?`;
     let parametros = [id];
-    console.log('parametros' + JSON.stringify(parametros))
 
     return this.database.executeSql(sentencia, parametros).then( datos => {
       return datos;
     }, err => {
-      console.log('Error: ', err);
       return err;
     })
   }

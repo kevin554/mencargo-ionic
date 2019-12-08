@@ -1,0 +1,46 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Enviar notificacion</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <!--<div style="height: 20%; background: lightblue" padding>-->
+
+    <h1>Notificando a:</h1>
+    <p>[destinatarios]</p>
+
+    <ion-fab right (tap)="verDestinatarios()">
+      <button ion-fab mini><ion-icon name="add"></ion-icon></button>
+    </ion-fab>
+
+  <!--</div>-->
+
+  <!--<div style="background: lightgoldenrodyellow">-->
+
+    <ion-item>
+      <ion-label color="primary" floating>Asunto</ion-label>
+      <ion-input type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <!--<ion-label color="primary" fixed>Fixed Label</ion-label>-->
+      <ion-textarea type="text" placeholder="Escribe la notificación"></ion-textarea>
+    </ion-item>
+
+  <!--</div>-->
+
+  <!--<ion-item>-->
+    <!--&lt;!&ndash;<ion-label color="primary" fixed>Fixed Label</ion-label>&ndash;&gt;-->
+    <!--<ion-textarea type="text" placeholder="Escribe la notificación"></ion-textarea>-->
+  <!--</ion-item>-->
+
+  <ion-fab bottom right (tap)="enviarNotificacion()">
+    <button ion-fab><ion-icon name="arrow-forward"></ion-icon></button>
+  </ion-fab>
+
+</ion-content>

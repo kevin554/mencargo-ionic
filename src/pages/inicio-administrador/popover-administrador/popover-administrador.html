@@ -3,8 +3,12 @@
       *ngIf="objRol?.nombre_rol == 'Super Administrador'">
     Gestionar perfiles
   </button>
+  <button ion-item (click)="verReportes()"
+          *ngIf="objRol?.nombre_rol == 'Super Administrador'">
+    Reportes
+  </button>
   <cambiar-tema></cambiar-tema>
   <button ion-item (click)="cerrarSesion()" id="btnCerrarSesion">
-    Cerrar sesion
+    Cerrar sesión
   </button>
 </ion-list>

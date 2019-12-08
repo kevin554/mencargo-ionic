@@ -1,63 +1,10 @@
-import { Component, ChangeDetectorRef, ElementRef, Renderer } from '@angular/core';
-import { AlertController, Events, IonicPage, LoadingController, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
-import { FamiliaProvider, UsuarioProvider, UtilServiceProvider, ViviendaProvider, FamiliarDao } from '../../providers/index.services';
+import { Component, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { AlertController, Events, IonicPage, LoadingController, ModalController, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
+import { EventoProvider, FamiliaProvider, UsuarioProvider, UtilServiceProvider, NotificacionDao } from '../../providers/index.services';
 import { CallNumber } from '@ionic-native/call-number';
 import { Firebase } from '@ionic-native/firebase';
-import { Badge } from '@ionic-native/badge';
+import { SwalComponent } from '@toverux/ngx-sweetalert2';
 
-/*
-hay 3 tipos de notificaciones, 2 de tipo visita y 1 del backend
-respecto a las visitas
-  la app abierta
-    "tap":false,
-    "body":"Melina Fuster, su visita Leandro ha llegado y se dirige a su domicilio.",
-    "title":"Su visita esta en camino."
-
-  la app en 2do plano
-    "google.sent_time":1522700715231,
-    "google.ttl":2419200,
-    "message_body":"Melina Fuster, su visita Dominick ha llegado y se dirige a su domicilio.",
-    "message_title":"Su visita esta en camino.",
-    "tap":true,
-    "from":"120452764810",
-    "google.message_id":"0:1522700715238896%d72bd950d72bd950",
-    "collapse_key":"bo.com.cloudbit.tefor"
-
-cuando llega la visita
-  la app abierta
-    "message_body":"Melina hace 1 minutos que ingresó su visita. ¿Ha llegado a su domicilio?",
-    "message_title":"MENCARGO",
-    "idmovimiento":"562",
-    "tap":false,
-    "body":"Melina hace 1 minutos que ingresó su visita. ¿Ha llegado a su domicilio?",
-    "title":"MENCARGO"
-
-  la app en 2do plano
-    "google.sent_time":1522446783674,
-    "google.ttl":2419200,
-    "message_body":"Melina hace 1 minutos que ingresó su visita. ¿Ha llegado a su domicilio?",
-    "message_title":"MENCARGO",
-    "idmovimiento":"569",
-    "tap":true,
-    "from":"120452764810",
-    "google.message_id":"0:1522446783680936%d72bd950d72bd950",
-    "collapse_key":"bo.com.cloudbit.tefor"
-
-desde el backend
-  la app abierta:
-    "tap":false,
-    "title":"Mencargo"
-    "body":"Gracias por utilizar la app",
-
-  la app en 2do plano
-    "google.sent_time":1522700573570,
-    "google.ttl":2419200,
-    "message_body":"Notificacion de prueba",
-    "message_title":"Mencargo",
-    "tap":true,"from":"120452764810",
-    "google.message_id":"0:1522700573577242%d72bd950d72bd950",
-    "collapse_key":"bo.com.cloudbit.tefor"
-*/
 @IonicPage()
 @Component({
   selector: 'page-inicio-propietario',
@@ -65,25 +12,28 @@ desde el backend
 })
 export class InicioPropietarioPage {
 
+  @ViewChild('alertaIngreso') public alertaIngreso: SwalComponent;
   private idFamiliar:any;
   private objPropietario:Familiar;
   private botonTocado:string; /* para animar los botones al tocarlos */
-  private animarBotonNotificacion:boolean;
-  private animarBotonNotificacionOtraVez:boolean = true;
-  private contadorNotificaciones:number;
-  // private seCargoDelServidor:boolean;
+  public hayNotificacionSinLeer:boolean;
+  public hayEvento:boolean; /* para saber si hay un evento en transcurso */
+  private animacionBotonNotificacion:number;
+
+  /* TIPOS DE ANIMACIONES */
+  public SIN_ANIMACION:number = 0;
+  public ANIMACION_TA_DA:number = 1;
+  public ANIMACION_SWING:number = 2;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       public loadingCtrl: LoadingController, public popoverCtrl: PopoverController,
       private firebase: Firebase, private _fp: FamiliaProvider,
       private _up: UsuarioProvider, private util: UtilServiceProvider,
       private callNumber: CallNumber, private alertCtrl: AlertController,
-      private _vp: ViviendaProvider, private familiarDao: FamiliarDao,
-      private platform: Platform, private events: Events,
-      public detectorRef: ChangeDetectorRef, private badge: Badge,
-      public element: ElementRef, public renderer: Renderer) {
-    this.contadorNotificaciones = 0;
-    // this.badge.clear().then(succes=> {}).catch(err => {});;
+      private notificacionDao: NotificacionDao, private events: Events,
+      private platform: Platform, public detectorRef: ChangeDetectorRef,
+      public modalCtrl: ModalController, private _ep: EventoProvider) {
+    this.animacionBotonNotificacion = this.SIN_ANIMACION;
 
     if (_up.activo()) {
       this.idFamiliar = _up.getId();
@@ -92,79 +42,88 @@ export class InicioPropietarioPage {
 
     if (this.objPropietario.token.toLowerCase() === 'sin token') {
       this.obtenerToken();
+      this.cargarNotificacionesServidor();
+      this.cargarEventoEnCurso();
     }
 
+    events.subscribe("hayNotificacionSinLeer", (hayNotificacion) => {
+      this.hayNotificacionSinLeer = hayNotificacion;
+
+      this._up.setHayNotificacionSinLeer(hayNotificacion);
+    });
+
+    /* para estar al tanto de las notificaciones que llegarán */
     this.recibirNotificaciones();
 
-    this.cargarNotificacionesServidor();
+    this.hayNotificacionSinLeer = this._up.getHayNotificacionSinLeer();
+  }
 
-    // this.cargarNotificacionesLocal();
+  /* hay que verificar si hay algun evento en transcurso */
+  ionViewDidEnter() {
+    // console.log(`la pagina de inicio se ejecuta cada vez que se inicia la applicacion`);
 
-    events.subscribe("disminuirContadorNotificaciones", () => {
-      this.contadorNotificaciones--;
-      // this.badge.decrease(1).then(succes=> {}).catch(err => {});
-      detectorRef.detectChanges();
-    });
+    this.animacionBotonNotificacion = this.SIN_ANIMACION;
+    this.botonTocado = undefined;
 
-    events.subscribe("aumentarContadorNotificaciones", () => {
-      this.contadorNotificaciones++;
+    // console.log(`la fecha en el usuario provider (${this._up.getFechaEvento()})`);
 
-      this.firebase.setBadgeNumber(this.contadorNotificaciones);
-      // this.badge.increase(1).then(succes=> {}).catch(err => {});
-      detectorRef.detectChanges();
-    });
+    if (!this._up.getFechaEvento()) {
+      this.hayEvento = false;
+    } else {
+      let fin = new Date(this._up.getFechaEvento())
+      let hoy = new Date();
 
-    events.subscribe("animar", (animar) => {
-      // this.renderer.setElementStyle(animar, "animation", "swing linear 1s")
-      // this.detectorRef.detectChanges();
-      this.renderer.setElementStyle(animar, "animation", "ta-da linear 1s")
-      this.renderer.setElementStyle(animar, "animation-iteration-count", "1")
-      this.renderer.setElementStyle(animar, "transform-origin", "50% 50%")
-    });
+      // console.log(`la fecha del celu es (${hoy}) y la fecha en que finaliza el evento es (${fin})`);
 
-    events.subscribe("desanimar", (animar) => {
-      this.renderer.setElementStyle(animar, "animation", "none")
-      this.events.publish("animar", animar);
-      // this.detectorRef.detectChanges();
+      let cantidad = fin.getTime() - hoy.getTime();
+      // console.log(`la cantidad de ms que hay entre hoy a la fecha del final del evento es: ${cantidad}, si es positivo significa hay un evento en curso`);
 
+      /* el evento finalizó */
+      if (cantidad <= 0) {
+        this.hayEvento = false;
+
+        this._up.setIdEvento(undefined);
+        this._up.establecerFechaEvento(undefined);
+        this.hayEvento = false;
+      } else {
+        this.hayEvento = true;
+      }
+    }
+
+    this.detectorRef.detectChanges();
+    // console.log(`se refresco la pantalla`)
+  }
+
+  ionViewDidLoad() {
+    this._up.cargarStorage().then( () => {
+      /* la primera vez que habra la app, debe mostrarse el tutorial */
+      let seEjecutoAntes = this._up.getseEjecutoAntesInicio();
+
+      if (!seEjecutoAntes) {
+        let param = {
+          tutorial: "inicio"
+        }
+
+        let config = {
+          showBackdrop: true,
+          enableBackdropDismiss: true
+        }
+
+        let profileModal = this.modalCtrl.create("TutorialPage", param, config);
+
+        profileModal.onDidDismiss( datos => {
+          /* se cerró el tutorial */
+          this._up.setseEjecutoAntesInicio(true);
+        });
+
+        profileModal.present();
+      }
     });
   }
 
-  // cargarNotificacionesLocal() {
-  //   if (this.platform.is("cordova")) {
-  //     this.familiarDao.getDatabaseState().subscribe( listo => {
-  //       if (listo) {
-  //         this.familiarDao.seleccionarTodas().then( (datos)  => {
-  //           this.contadorNotificaciones = 0;
-  //
-  //           for (let i in datos) {
-  //             let notificacion = datos[i];
-  //
-  //             if (notificacion.lectura == "None") {
-  //               this.contadorNotificaciones++;
-  //             }
-  //           }
-  //
-  //           if (this.seCargoDelServidor) {
-  //             return;
-  //           }
-  //
-  //           if (datos.length == 0) {
-  //             this.cargarNotificacionesServidor();
-  //             return;
-  //           }
-  //
-  //
-  //         }); /* fin de familiarDao.seleccionarTodas() */
-  //       }
-  //
-  //     }); /* fin del getDatabaseState */
-  //   }
-  // }
-
   cargarNotificacionesServidor() {
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando notificaciones',
+      content: 'Cargando notificaciones',
       enableBackdropDismiss: true
     });
 
@@ -173,7 +132,7 @@ export class InicioPropietarioPage {
     let peticion = this._fp.obtenerNotificaciones(
       this.objPropietario.id,
       this.objPropietario.codigo
-    )
+    );
 
     cargarPeticion.onDidDismiss( () => {
       peticionEnCurso.unsubscribe();
@@ -183,25 +142,21 @@ export class InicioPropietarioPage {
       let datos = resp.json();
 
       if (datos.success) {
-        // this.seCargoDelServidor = true;
-
         datos = datos.response;
 
-        this.contadorNotificaciones = 0;
-        this.badge.clear();
-
         let notificaciones = [];
+        this.hayNotificacionSinLeer = false;
 
         for (let indice in datos) {
           let notificacion = datos[indice];
           notificaciones.push(notificacion);
 
-          // if (this.platform.is("cordova")) {
-          //   this.agregarNotificacionLocal(notificacion);
-          // }
+          if (this.platform.is("cordova")) {
+            this.agregarNotificacionLocal(notificacion);
+          }
 
           if (notificacion.fecha_lectura == "None") {
-            this.events.publish("aumentarContadorNotificaciones");
+            this.hayNotificacionSinLeer = true;
           }
         }
 
@@ -209,7 +164,7 @@ export class InicioPropietarioPage {
         let mensaje:string = datos.message;
 
         /* Se anulo la sesión de este dispositivo contacte con gerencia por favor. */
-        if (mensaje.toLowerCase().startsWith("se anulo la sesión ")) {
+        if (mensaje.toLowerCase().startsWith('Código ya utilizado')) {
           this.util.toast(mensaje);
         }
       }
@@ -217,7 +172,6 @@ export class InicioPropietarioPage {
     }).subscribe(
       success => {
         cargarPeticion.dismiss();
-        // this.cargarNotificacionesLocal();
       },
       err => {
         cargarPeticion.dismiss();
@@ -225,35 +179,101 @@ export class InicioPropietarioPage {
     );
   }
 
-  // agregarNotificacionLocal(notificacion) {
-  //   /* el objeto listo para insertar en local */
-  //   let obj = {
-  //     id: notificacion.id,
-  //     titulo: notificacion.titulo,
-  //     mensaje: notificacion.mensaje,
-  //     fkfamilia: notificacion.fkfamilia,
-  //     fkcondominio: notificacion.condominio,
-  //     fecha: notificacion.fecha_notificacion,
-  //     lectura: notificacion.fecha_lectura
-  //   }
-  //
-  //   this.familiarDao.insertar(obj);
-  // }
+  cargarEventoEnCurso() {
+    let cargarPeticion = this.loadingCtrl.create({
+      content: 'Verificando la existencia de algún evento en curso.',
+      enableBackdropDismiss: true
+    });
+
+    cargarPeticion.present();
+
+    let peticion = this._ep.listaEventoFamiliar(
+      this.objPropietario.id,
+      this.objPropietario.codigo
+    );
+
+    cargarPeticion.onDidDismiss( () => {
+      peticionEnCurso.unsubscribe();
+    });
+
+    let peticionEnCurso = peticion.map( resp =>  {
+      let datos = resp.json();
+
+      if (datos.success) {
+        datos = datos.response;
+
+        let eventoEnCurso;
+
+        for (let indice in datos) {
+          let evento = datos[indice];
+
+          if (eventoEnCurso) {
+            if (evento.id > eventoEnCurso.id) {
+              eventoEnCurso = evento;
+            }
+
+          } else {
+            eventoEnCurso = evento;
+          }
+        }
+
+        if (eventoEnCurso) {
+          // guardar la fecha y hora del evento SUMADAS LAS 48 HORAS
+          let hoy = new Date(eventoEnCurso.fecha);
+          let pasadoManiana = new Date();
+          pasadoManiana.setDate(hoy.getDate() + 2);
+
+          this._up.establecerFechaEvento(pasadoManiana);
+          this._up.setIdEvento(eventoEnCurso.id);
+
+          this.hayEvento = true;
+        }
+
+      } else {
+        let mensaje:string = datos.message;
+
+        /* Se anulo la sesión de este dispositivo contacte con gerencia por favor. */
+        if (mensaje.toLowerCase().startsWith('Código ya utilizado')) {
+          this.util.toast(mensaje);
+        }
+      }
+
+    }).subscribe(
+      success => {
+        cargarPeticion.dismiss();
+      },
+      err => {
+        cargarPeticion.dismiss();
+      }
+    );
+  }
+
+  agregarNotificacionLocal(notificacion) {
+    /* el objeto listo para insertar en local */
+    let obj = {
+      id: notificacion.id,
+      titulo: notificacion.titulo,
+      mensaje: notificacion.mensaje,
+      fkfamilia: notificacion.fkfamilia,
+      fkcondominio: notificacion.condominio,
+      fecha: notificacion.fecha_notificacion,
+      lectura: notificacion.fecha_lectura
+    }
+
+    this.notificacionDao.insertar(obj);
+  }
 
   private recibirNotificaciones() {
-    /* para poder tomar acciones cuando el usuario toque la notificacion */
+    /* para tomar acciones cuando el usuario toque la notificacion */
     if (this.objPropietario.token != "Sin Token") {
       this.firebase.onNotificationOpen().subscribe(
 
         success => {
-
-          console.log(`success ${JSON.stringify(success)}`);
-
           if (success.message_body) {
             let mensaje:string = success.message_body;
 
             /* si el mensaje es de tipo 'Nico hace X minutos...' */
-            if (mensaje.startsWith(`${this.objPropietario.nombre} hace `)) {
+            if (mensaje.startsWith(`${this.objPropietario.nombre} ${this.objPropietario.apellido} hace `)) {
               let idMovimiento = success.idmovimiento;
 
               let parametros = {
@@ -275,79 +295,43 @@ export class InicioPropietarioPage {
               /* si la app estaba ejecutandose, debería mostrar una notificacion
                 local*/
               if (!success.tap) {
-                this.util.toast(mensaje)
+                this.mostrarEstadoIngreso(mensaje, true);
+                // this.util.toast(mensaje)
+              } else {
+                this.mostrarEstadoIngreso(mensaje, true);
               }
+
             } else {
-              this.events.publish("aumentarContadorNotificaciones");
+              this.events.publish("hayNotificacionSinLeer", true);
+
+              switch (this.animacionBotonNotificacion) {
+                case 0:
+                  this.animacionBotonNotificacion = this.ANIMACION_TA_DA;
+                  break;
+
+                case 1:
+                  this.animacionBotonNotificacion = this.ANIMACION_SWING;
+                  break;
+
+                case 2:
+                  this.animacionBotonNotificacion = this.ANIMACION_TA_DA;
+                  break;
+              }
+
+              this.detectorRef.detectChanges()
 
               /* si la app estaba abierta, animo el boton de notificaciones e
                 incremento el contador de no-leídos en 1*/
               if (!success.tap) {
-                // this.animarBotonNotificacion = false;
-                // this.animarBotonNotificacion = true;
 
               } else {
+                // deberia abrir la notificacion directamente
                 this.verNotificaciones();
               }
 
             }
 
           } /* fin if(success.message_body) */
-
-          // /* así se reciben las notificaciones de visitas */
-          // if (success.message_body) {
-          //   let mensaje:string = success.message_body;
-          //
-          //   /* si el mensaje es de tipo 'Nico hace X minutos...' */
-          //   if (mensaje.startsWith(`${this.objPropietario.nombre} hace `)) {
-          //     let idMovimiento = success.idmovimiento;
-          //
-          //     /* si llegó en segundo plano */
-          //     // si no fue tocada, deberia mostrar una notificacion local talvez
-          //     let parametros = {
-          //       familiar: this.objPropietario,
-          //       idCondominio: this.objPropietario.condominio,
-          //       idMovimiento: idMovimiento
-          //     }
-          //
-          //     /* si llegó en segundo plano */
-          //     if (success.tap) {
-          //       this.navCtrl.setRoot('VerNotificacionPage', parametros);
-          //     } else { /* si la app ya estaba abierta */
-          //       this.navCtrl.push('VerNotificacionPage', parametros);
-          //     }
-          //   } /* fin */
-          //
-          //
-          //   /* si el mensaje es de tipo 'Nicolas Duran, su visita X ha llegado y se dirige a su domicilio' */
-          //   if (mensaje.startsWith(`${this.objPropietario.nombre} ${this.objPropietario.apellido}, su visita`)) {
-          //
-          //     /* si la app estaba ejecutandose, debería mostrar una notificacion local*/
-          //     if (!success.tap) {
-          //       this.util.toast(mensaje)
-          //     }
-          //   } /* fin */
-          //
-          // } else if (success.body) { /* así se recibe desde el backend */
-          //   let mensaje:string = success.body;
-          //
-          //   /* si el mensaje es de tipo 'Nicolas Duran, su visita X ha llegado y se dirige a su domicilio' */
-          //   if (mensaje.startsWith(`${this.objPropietario.nombre} ${this.objPropietario.apellido}, su visita`)) {
-          //     this.events.publish("aumentarContadorNotificaciones");
-          //   } else if (mensaje.startsWith(`${this.objPropietario.nombre} hace `)) {
-          //
-          //   } else { // si es desde el backend
-          //
-          //     if (!success.tap) {
-          //
-          //     } else {
-          //       this.verNotificaciones();
-          //     }
-          //
-          //     this.events.publish("aumentarContadorNotificaciones");
-          //   } /* fin de esta especie de switch */
-          //
-          // }
 
         }, err => {
           console.log(`error ${JSON.stringify(err)}`)
@@ -356,12 +340,17 @@ export class InicioPropietarioPage {
     }
   }
 
-  ionViewWillEnter() {
-    this.botonTocado = undefined;
-    this.animarBotonNotificacion = false;
+  /**
+  * muestra en pantalla completa si el ingreso/salida fue exitoso o no
+  */
+  private mostrarEstadoIngreso(mensaje, estado: boolean) {
+    this.alertaIngreso.title = mensaje;
+    this.alertaIngreso.type = "warning";
+
+    this.alertaIngreso.show();
   }
-  claseCss:string;
-  public tap(boton, animar?:ElementRef) {
+
+  public tap(boton) {
     this.botonTocado = boton;
 
     switch (boton) {
@@ -381,34 +370,27 @@ export class InicioPropietarioPage {
         this.crearEvento();
         break;
 
+      case "Lista de Invitados":
+        this.verListaDeInvitados();
+        break;
+
+      case "Grupos":
+        this.verGrupos();
+        break;
+
       case "Notificaciones":
-        // console.log(this.animarBotonNotificacion)
-        console.log(animar)
-
-        // this.events.publish("desanimar", animar);
-
-
-        this.animarBotonNotificacion = !this.animarBotonNotificacion;
-        this.animarBotonNotificacionOtraVez = !this.animarBotonNotificacionOtraVez;
-        // this.animarBotonNotificacion = false;
-        // this.animarBotonNotificacion = true;
-        // console.log(animar)
-
-        // this.verNotificaciones();
+        this.verNotificaciones();
         break;
     }
   }
 
-  animate() {
-    this.animarBotonNotificacion = true;
+  private verListaDeInvitados() {
+    let parametros = {
+      familiar: this.objPropietario,
+      viendoListaInvitados: true
+    };
 
-    // this.detectorRef.reattach();
-
-  }
-
-  desanimate() {
-    // this.detectorRef.detach();
-    this.animarBotonNotificacion = false;
+    this.navCtrl.push('VerContactosEventoPage', parametros);
   }
 
   /**
@@ -434,7 +416,7 @@ export class InicioPropietarioPage {
   private obtenerToken() {
     /* se va a mostrar una espera mientras se realiza la peticion */
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'obteniendo token',
+      content: 'Obteniendo token.',
       enableBackdropDismiss: true
     });
 
@@ -457,11 +439,15 @@ export class InicioPropietarioPage {
 
     /* se va a mostrar una espera mientras se realiza la peticion */
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'almacenando el token',
+      content: 'Almacenando el token.',
       enableBackdropDismiss: true
     });
 
-    let peticion = this._fp.actualizarToken(this.idFamiliar, this.objPropietario.codigo, token);
+    let peticion = this._fp.actualizarToken(
+      this.idFamiliar,
+      this.objPropietario.codigo,
+      token
+    );
 
     /* si se cancela la espera antes de que finalice la peticion */
     cargarPeticion.onDidDismiss( () => {
@@ -476,8 +462,6 @@ export class InicioPropietarioPage {
         this._up.ingresar(this.objPropietario);
 
         this.recibirNotificaciones();
-      } else {
-
       }
 
     }).subscribe(
@@ -492,7 +476,6 @@ export class InicioPropietarioPage {
 
   public enviarInvitacion() {
     let parametros = {
-      idFamiliar: this.idFamiliar,
       familiar: this.objPropietario,
       soloRegistrarAmigo: false
     }
@@ -511,7 +494,7 @@ export class InicioPropietarioPage {
   public solicitarSoporte() {
     /* se va a mostrar una espera mientras se realiza la peticion */
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'obteniendo el numero del condominio',
+      content: 'Obteniendo el número del condominio.',
       enableBackdropDismiss: true
     });
 
@@ -563,20 +546,21 @@ export class InicioPropietarioPage {
         if (telefono) {
           this.realizarLlamada(telefono);
         }
+
       }
     )
   }
 
   private confirmarRealizarLlamada(telefono) {
     let alert = this.alertCtrl.create({
-      message: `Llamar a la administracion del condominio al ${telefono}`,
+      message: `Llamar a la administración del condominio al ${telefono}?`,
       buttons: [
         {
-          text: 'cancelar',
+          text: 'Cancelar',
           role: 'cancel'
         },
         {
-          text: 'llamar',
+          text: 'Llamar',
           handler: () => {
             this.realizarLlamada(telefono);
           }
@@ -601,6 +585,14 @@ export class InicioPropietarioPage {
     }
 
     this.navCtrl.push('CrearEventoPage', parametros);
+  }
+
+  public verGrupos() {
+    let parametros = {
+      familiar: this.objPropietario
+    }
+
+    this.navCtrl.push("VerGruposPage", parametros);
   }
 
   private verNotificaciones() {

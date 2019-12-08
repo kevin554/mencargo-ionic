@@ -15,6 +15,8 @@ export class GestionarPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
       public loadingCtrl: LoadingController, public popoverCtrl: PopoverController,
       private _ap: AdministradorProvider, private util: UtilServiceProvider) {
+    // if (navParams.get("navCtrl")) this.navCtrl = navParams.get("navCtrl");
+
     if (navParams.get("condominio")) {
       this.objCondominio = navParams.get("condominio");
       this.cargarUsuarios();
@@ -22,7 +24,7 @@ export class GestionarPage {
   }
 
   public desplegarMenu(evento) {
-    let popover = this.popoverCtrl.create('PopoverGestionarPage');
+    let popover = this.popoverCtrl.create("PopoverGestionarPage");
 
     popover.present({
       ev: evento
@@ -32,7 +34,7 @@ export class GestionarPage {
   public verPermisos(item) {
     let parametros = {
       privilegios: item.privilegios
-    };
+    }
 
     this.navCtrl.push('GestionarPermisosPage', parametros);
   }
@@ -45,13 +47,15 @@ export class GestionarPage {
   private cargarUsuarios() {
     /* se va a mostrar una espera mientras se realiza la peticion */
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando usuarios y privilegios',
-      enableBackdropDismiss: true
+      content: 'Cargando usuarios y privilegios.',
+      dismissOnPageChange: false
     });
 
     cargarPeticion.present();
 
-    let peticion = this._ap.cargarUsuariosPrivilegios(this.objCondominio.fkcondominio);
+    let peticion = this._ap.cargarUsuariosPrivilegios(
+      this.objCondominio.fkcondominio
+    );
 
     /* si se cancela la espera antes de que finalice la peticion */
     cargarPeticion.onDidDismiss( () => {
@@ -77,7 +81,6 @@ export class GestionarPage {
           /* {id: 0, fkuser: 0, boton: '', estado: false} */
           for (let j in dato.privilegios) {
             let privilegio = dato.privilegios[j];
-
             privilegios.push(privilegio);
           }
 
@@ -99,14 +102,14 @@ export class GestionarPage {
           };
 
           this.lista.push(parametros);
-        } // fin for
+        } /* fin for */
       }
 
     }).subscribe(
       success => {
         cargarPeticion.dismiss();
       }, err => {
-        this.util.toast(`Hubo un error al conectarse con el servidor`);
+        this.util.toast(`Hubo un error al conectarse con el servidor.`);
         cargarPeticion.dismiss();
       }
     );

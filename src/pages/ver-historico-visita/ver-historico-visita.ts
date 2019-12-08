@@ -10,7 +10,7 @@ import { MovimientoProvider } from '../../providers/index.services';
 export class VerHistoricoVisitaPage {
 
   private objVisita:any;
-  private noHayConexion:boolean;
+  public noHayConexion:boolean;
   private lista:any[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -21,19 +21,17 @@ export class VerHistoricoVisitaPage {
     }
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad VerHistoricoVisitaPage');
-  }
-
   private cargarHistorial() {
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando el historial de visitas',
+      content: 'Cargando el historial de visitas',
       enableBackdropDismiss: true
     });
 
     cargarPeticion.present();
 
-    let peticion = this._mp.seleccionarHistorialInvitado(this.objVisita.invitado_id);
+    let peticion = this._mp.seleccionarHistorialInvitado(
+      this.objVisita.invitado_id
+    );
 
     cargarPeticion.onDidDismiss( () => {
       peticionEnCurso.unsubscribe();

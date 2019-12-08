@@ -8,4 +8,10 @@ export { UtilServiceProvider } from './util-service/util-service'
 export { ViviendaDao } from './dao/vivienda-dao';
 export { FamiliarDao } from './dao/familiar-dao';
 export { Sql } from './dao/sql';
-export { InvitadoDao } from './dao/invitado-dao'
+export { InvitadoDao } from './dao/invitado-dao';
+export { EventoProvider } from './evento/evento';
+export { GrupoProvider } from './grupo/grupo';
+export { NotificacionDao } from './dao/notificacion-dao';
+export { IngresosProvider } from './dao/ingresos';
+export { FamiliaresProvider } from './dao/familiares';
+export { ContactosProvider } from './dao/contactos';

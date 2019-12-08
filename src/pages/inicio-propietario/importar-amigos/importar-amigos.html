@@ -1,10 +1,11 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title>Importar amigos</ion-title>
-    <ion-buttons start>
+    <!-- <ion-title></ion-title> -->
+    <ion-buttons end>
       <button ion-button (click)="importarContactos()">
-        {{hayContactosSeleccionados() ? 'Agregar contactos' : 'Seleccionar todos'}}
+        <!--{{hayContactosSeleccionados() ? 'Agregar contactos' : 'Seleccionar todos'}}-->
+        Agregar contactos
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -24,7 +25,7 @@
         <ion-icon name="checkmark" item-end color="primary"
             *ngIf="contacto.seleccionado">
         </ion-icon>
-        {{contacto.nombre}}
+        {{contacto.nombre}} {{contacto.apellido}}
       </ion-item>
     </ion-item-group>
   </ion-list>

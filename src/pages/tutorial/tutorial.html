@@ -1,0 +1,37 @@
+<ion-header>
+
+</ion-header>
+
+
+<ion-content>
+
+  <ion-slides>
+    <ion-slide *ngIf="tutorial == PRIMERA_VEZ_USANDO_LA_APP">
+      <img src="assets/imgs/tuto-enviar-invitacion.jpg" alt="enviar invitacion">
+      <ion-fab bottom right>
+        <button ion-button (tap)="siguiente(TUTORIAL_ENVIAR_INVITACION)">
+          Siguiente
+        </button>
+      </ion-fab>
+    </ion-slide>
+    <ion-slide *ngIf="tutorial == PRIMERA_VEZ_USANDO_LA_APP">
+      <img src="assets/imgs/tuto-lista-contactos.jpg" alt="lista de contactos">
+      <ion-fab bottom right>
+        <button ion-button (tap)="cerrar()">Listo</button>
+      </ion-fab>
+    </ion-slide>
+    <ion-slide *ngIf="tutorial == PRIMERA_VEZ_ENVIANDO_INVITACION">
+      <img src="assets/imgs/tuto-generar-invitacion.jpg" alt="generar invitacion">
+      <ion-fab bottom right>
+        <button ion-button (tap)="cerrar()">Listo</button>
+      </ion-fab>
+    </ion-slide>
+    <ion-slide *ngIf="tutorial == PRIMERA_VEZ_CREANDO_EVENTO">
+    <img src="assets/imgs/tuto-crear-evento.jpg" alt="crear evento">
+      <ion-fab bottom right>
+        <button ion-button (tap)="cerrar()">Listo</button>
+      </ion-fab>
+    </ion-slide>
+  </ion-slides>
+
+</ion-content>

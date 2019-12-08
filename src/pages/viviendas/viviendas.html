@@ -1,7 +1,29 @@
 <ion-header>
 
-  <ion-navbar color="primary">
-    <ion-title>Viviendas</ion-title>
+  <!-- La idea es que al presionar el boton de busqueda, es buscador aparezca
+  y reemplace todo el contenido de la barra de navegacion -->
+  <ion-navbar [hideBackButton]="mostrarBuscador" color="primary">
+    <ion-title *ngIf="!mostrarBuscador">Viviendas</ion-title>
+    <ion-buttons end *ngIf="!mostrarBuscador">
+      <button ion-button icon-only (tap)="mostrarBuscador = true">
+        <ion-icon name="search"></ion-icon>
+      </button>
+      <button ion-button icon-only (tap)="alternarVistaViviendas()">
+        <ion-icon [name]="_ap.isViviendasComoLista() ? 'apps' : 'list' ">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+    <!-- EL BUSCADOR -->
+    <ion-searchbar *ngIf="mostrarBuscador"
+        (ionInput)="buscarViviendas($event)"
+        placeholder="Buscar"
+        showCancelButton=true
+        cancelButtonText="Cancelar"
+        (ionCancel)="cancelarBusqueda($event)"
+        animated=true
+        debounce=0
+        class="fadein-down">
+    </ion-searchbar>
   </ion-navbar>
 
 </ion-header>
@@ -19,25 +41,31 @@
 
   <h3 text-center>{{objCondominio?.nombre_condominio}}</h3>
 
-  <ion-grid>
+  <!-- LAS VIVIENDAS VISUALIZADAS EN UNA CUADRICULA -->
+  <ion-grid *ngIf="!_ap.isViviendasComoLista()">
     <ion-row>
       <ion-col *ngFor="let vivienda of viviendas" col-4 col-md-3 col-lg-2
-          text-center margin-vertical (click)="verVivienda(vivienda)">
+          text-center margin-vertical (tap)="verVivienda(vivienda)">
         <img [src]="vivienda.familia ? 'assets/imgs/home-green.png' :
             'assets/imgs/home-yellow.png'" alt="vivienda" padding
             style="padding-bottom: 8px">
-        <ion-badge>{{vivienda.codificacion}}<br>{{vivienda.familia}}</ion-badge>
+        <ion-badge>{{vivienda?.codificacion}}<br>{{vivienda?.familia}}</ion-badge>
       </ion-col>
     </ion-row>
   </ion-grid>
 
-  <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
-  <empty-state *ngIf="noHayConexion" [img]="'assets/imgs/cloud-off.png'"></empty-state>
+  <!-- LAS VIVIENDAS VISALIZADAS EN UNA LISTA -->
+  <ion-list *ngIf="_ap.isViviendasComoLista()">
+    <button ion-item *ngFor="let vivienda of viviendas"
+        (tap)="verVivienda(vivienda)">
+      {{ (vivienda?.familia) ? (vivienda?.familia) : (vivienda?.codificacion) }}
+    </button>
+  </ion-list>
 
   <!-- EMPTY STATE PARA CUANDO EL CONDOMINIO NO TIENE CASAS REGISTRADAS -->
-  <empty-state *ngIf="viviendas?.length === 0"
+  <empty-state *ngIf="!viviendas || viviendas?.length === 0"
       [img]="'assets/imgs/neighborhood.png'"
-      [error]="'no hay viviendas registradas'">
+      [error]="'No hay viviendas'">
   </empty-state>
 
 </ion-content>

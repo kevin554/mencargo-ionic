@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AlertController, ToastController, ToastOptions } from 'ionic-angular';
+import { AlertController, Toast, ToastController, ToastOptions } from 'ionic-angular';
 
 @Injectable()
 export class UtilServiceProvider {
+
+  private mToast:Toast;
 
   constructor(public alertCtrl: AlertController, public toastCtrl: ToastController) { }
 
@@ -21,6 +23,10 @@ export class UtilServiceProvider {
     return lista.sort(this.comparadorDinamico(columna, tipoOrdenamiento));
   }
 
+  public ordenarPorId(lista:any[], columna, tipoOrdenamiento?):any[] {
+    return lista.sort(this.comparadorDinamicoIds(columna, tipoOrdenamiento));
+  }
+
   private comparadorDinamico(nombreColumna, tipoOrdenamiento) {
     /* 1 ascendente, -1 descendente */
     if (!tipoOrdenamiento) {
@@ -32,6 +38,23 @@ export class UtilServiceProvider {
         return -1 * tipoOrdenamiento;
 
       if (a[nombreColumna].toLowerCase() > b[nombreColumna].toLowerCase())
+        return 1 * tipoOrdenamiento;
+
+      return 0;
+    }
+  }
+
+  private comparadorDinamicoIds(nombreColumna, tipoOrdenamiento) {
+    /* 1 ascendente, -1 descendente */
+    if (!tipoOrdenamiento) {
+      tipoOrdenamiento = 1;
+    }
+
+    return function(a, b) {
+      if (a[nombreColumna] < b[nombreColumna])
+        return -1 * tipoOrdenamiento;
+
+      if (a[nombreColumna] > b[nombreColumna])
         return 1 * tipoOrdenamiento;
 
       return 0;
@@ -62,44 +85,41 @@ export class UtilServiceProvider {
     }
   }
 
-
-  // private comparadorGenerico(a, b) {
-  //   return a > b ? 1 : a < b ? -1 : 0;
-  // }
-
-  // public ordenarPorMultiplesCampos(lista:any[], primeraColumna, segundaColumna) {
-  //   /*
-  //   basicamente hago esto:
-  //     comp(a, b) {
-  //       return a > b ? 1 : b > a ? -1 : 0;
-  //     }
-  //
-  //     sort( (a, b) => {
-  //       return comp([comp(a.X, b.X), comp(a.Y, b.Y)], [comp(b.X, a.X), comp(b.Y, a.Y)]);
-  //     })
-  //   */
-  //   lista.sort( (a, b) => {
-  //     return this.comparadorGenerico(
-  //       [this.comparadorGenerico(a[primeraColumna].toLowerCase(), b[primeraColumna].toLowerCase()),
-  //         this.comparadorGenerico(a[segundaColumna].toLowerCase(), b[segundaColumna].toLowerCase())],
-  //       [this.comparadorGenerico(b[primeraColumna].toLowerCase(), a[primeraColumna].toLowerCase()),
-  //         this.comparadorGenerico(b[segundaColumna].toLowerCase(), a[segundaColumna].toLowerCase())]
-  //     );
-  //   });
-  // }
-
   public toast(mensaje: string, duracion?: number) {
+    /* si habia un toast (sin duración definida) mostrandose, lo cierro */
+    if (this.mToast && !this.mToast.data.duration) {
+      this.mToast.dismiss();
+    }
+
     let opciones:ToastOptions = { };
 
     opciones.message = mensaje;
     opciones.showCloseButton = true;
     opciones.closeButtonText = "cerrar";
-    opciones.dismissOnPageChange = true;
     if (duracion) opciones.duration = duracion;
 
-    let toast = this.toastCtrl.create(opciones);
+    this.mToast = this.toastCtrl.create(opciones);
 
-    toast.present();
+    this.mToast.present();
+  }
+
+  public toastSuperior(mensaje: string, duracion?: number) {
+    /* si habia un toast (sin duración definida) mostrandose, lo cierro */
+    if (this.mToast && !this.mToast.data.duration) {
+      this.mToast.dismiss();
+    }
+
+    let opciones:ToastOptions = { };
+
+    opciones.message = mensaje;
+    opciones.showCloseButton = true;
+    opciones.closeButtonText = "cerrar";
+    opciones.position = "top";
+    if (duracion) opciones.duration = duracion;
+
+    this.mToast = this.toastCtrl.create(opciones);
+
+    this.mToast.present();
   }
 
   /**
@@ -133,7 +153,7 @@ export class UtilServiceProvider {
   }
 
   /**
-  *
+  * La fecha actual en formato YYYY-MM-DD HH:MM:SS
   */
   public getFechaHoraNormal() {
     let fecha = new Date();
@@ -184,29 +204,69 @@ export class UtilServiceProvider {
     alert.present();
   }
 
-  public presentAlertWithCallback(title: string, message: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const confirm = this.alertCtrl.create({
-        title,
-        message,
-        buttons: [{
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            confirm.dismiss().then(() => resolve(false));
-            return false;
-          }
-        }, {
-          text: 'Yes',
-          handler: () => {
-            confirm.dismiss().then(() => resolve(true));
-            return false;
-          }
-        }]
-      });
+  public obtenerDia(dia) {
+    switch (dia) {
+      case 0:
+        return "domingo";
 
-      return confirm.present();
-    });
+      case 1:
+        return "lunes";
+
+      case 2:
+        return "martes";
+
+      case 3:
+        return "miercoles";
+
+      case 4:
+        return "jueves";
+
+      case 5:
+        return "viernes";
+
+      case 6:
+        return "sábado";
+    }
+  }
+
+  public obtenerMes(numeroMes) {
+    switch (numeroMes) {
+      case 1:
+        return "enero";
+
+      case 2:
+        return "febrero";
+
+      case 3:
+        return "marzo";
+
+      case 4:
+        return "abril";
+
+      case 5:
+        return "mayo";
+
+      case 6:
+        return "junio";
+
+      case 7:
+        return "julio";
+
+      case 8:
+        return "agosto";
+
+      case 9:
+        return "septiembre";
+
+      case 10:
+        return "octubre";
+
+      case 11:
+        return "noviembre";
+
+      case 12:
+        return "diciembre";
+    }
   }
 
 }

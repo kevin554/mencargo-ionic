@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-
-import { MovimientoProvider, UtilServiceProvider } from '../../../providers/index.services';
+import { AlertController, IonicPage, Loading, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AdministradorProvider, EventoProvider, MovimientoProvider, UtilServiceProvider } from '../../../providers/index.services';
 
 @IonicPage()
 @Component({
@@ -11,19 +10,29 @@ import { MovimientoProvider, UtilServiceProvider } from '../../../providers/inde
 export class VisitasPage {
 
   private visitas:any[];
+  /* lista auxiliar para restaurar la lista despues de una busqueda */
+  private visitasAux:any[];
   private objCondominio:any; /* {fkcondominio, nombre_condominio} */
+  private objUsuario:any;
   private fecha:any;
-  private noHayConexion:boolean;
-  private hayQueRegistrarSalida:boolean;
+  public noHayConexion:boolean;
+  public hayQueRegistrarSalida:boolean;
   private busqueda:string;
   cabecera:any = [ "ingreso", "nombre", "vivienda" ];
   columnaOrdenada:string;
+  private cargarPeticion:Loading;
+  private peticionEnCurso:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       private _mp: MovimientoProvider, public loadingCtrl: LoadingController,
-      public alertCtrl: AlertController, private util: UtilServiceProvider) {
+      public alertCtrl: AlertController, private util: UtilServiceProvider,
+      private _ep: EventoProvider, private _ap: AdministradorProvider) {
     this.fecha = this.util.getFechaNormal();
     this.busqueda = "";
+
+    if (navParams.get("usuario")) {
+      this.objUsuario = navParams.get("usuario");
+    }
 
     if (navParams.get("condominio")) {
       this.objCondominio = navParams.get("condominio");
@@ -43,7 +52,11 @@ export class VisitasPage {
   private comparadorDinamico(nombreColumna, columnaSeleccionada) {
     let tipoOrdenamiento = this.columnaOrdenada == columnaSeleccionada ? -1 : 1;
 
-    this.columnaOrdenada = columnaSeleccionada;
+    if (this.columnaOrdenada == columnaSeleccionada) {
+      this.columnaOrdenada = undefined;
+    } else {
+      this.columnaOrdenada = columnaSeleccionada;
+    }
 
     return function(a, b) {
       if (a[nombreColumna] < b[nombreColumna])
@@ -65,159 +78,212 @@ export class VisitasPage {
   }
 
   private cargarVisitas() {
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando visitas',
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Cargando visitas',
       enableBackdropDismiss: true
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
     let peticion = this._mp.getInvitadosDeCondominio(
-      this.objCondominio.fkcondominio, this.fecha);
+      this.objUsuario.id,
+      this.objUsuario.codigo,
+      this.objCondominio.fkcondominio,
+      this.util.getFechaFormateada(this.fecha)
 
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
+    );
+
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map( resp => {
+    this.peticionEnCurso = peticion.map( resp => {
       let datos = resp.json();
 
       if (datos.success) {
         datos = datos.response;
         this.visitas = [];
+        this.visitasAux = [];
 
         for (let indice in datos) {
           let visita = datos[indice];
+
           this.visitas.push(visita);
+          this.visitasAux.push(visita);
+        }
+      } else {
+        let mensaje:string = datos.message;
+
+        /* Se anulo la sesión de este dispositivo contacte con gerencia por favor. */
+        if (mensaje.toLowerCase().startsWith("se anulo la sesión ")) {
+          this.util.toast(mensaje);
+          this._ap.setSesionAnulada(true);
         }
       }
 
     }).subscribe(
       success => {
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
         this.noHayConexion = false;
       },
       err => {
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
         this.noHayConexion = true;
-        this.util.toast('hubo un error al conectarse con el servidor');
+        this.util.toast('Hubo un error al conectarse con el servidor.');
       }
     );
   }
 
   public buscarVisitas() {
-    // if (this.hayQueRegistrarSalida) {
-    //   this.buscarVisitasLocal();
-    //   return;
-    // }
+    this.visitas = this.visitasAux;
 
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando visitas',
-      enableBackdropDismiss: true
-    });
+    if (!this.busqueda) {
+      return;
+    }
 
-    cargarPeticion.present();
+    this.busqueda = this.busqueda.trim();
 
-    let peticion = this._mp.buscarVisitas(this.objCondominio.fkcondominio, this.busqueda);
+    this.visitas = this.visitas.filter(
+      (visita) => {
+        let nombre = visita.invitado_nombre.toLowerCase();
+        this.busqueda = this.busqueda.toLowerCase();
 
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
-    });
-
-    let peticionEnCurso = peticion.map( resp => {
-      let datos = resp.json();
-
-      if (datos.success) {
-        datos = datos.response;
-        this.visitas = [];
-
-        for (let indice in datos) {
-          let visita = datos[indice];
-          this.visitas.push(visita);
-        }
-      }
-
-    }).subscribe(
-      success => {
-        cargarPeticion.dismiss();
-        this.noHayConexion = false;
-      },
-      err => {
-        cargarPeticion.dismiss();
-        this.noHayConexion = true;
-        this.util.toast('hubo un error al conectarse con el servidor');
+        return (nombre.indexOf(this.busqueda) > -1);
       }
     );
-  }
 
-  // public buscarVisitasLocal() {
-  //   let visitas = [];
-  //
-  //   this.visitas = this.visitas.filter(
-  //     visita => {
-  //
-  //       if ( visita.invitado_nombre.toLowerCase().startsWith(this.busqueda.toLowerCase()) ) {
-  //         visitas.push(visita);
-  //       }
-  //
-  //     }
-  //   )
-  //
-  //   console.log(visitas)
-  // }
+    // let cargarPeticion = this.loadingCtrl.create({
+    //   content: 'Cargando visitas',
+    //   enableBackdropDismiss: true
+    // });
+    //
+    // cargarPeticion.present();
+    //
+    // let peticion = this._mp.buscarVisitas(
+    //   this.objCondominio.fkcondominio,
+    //   this.busqueda,
+    //   this.util.getFechaFormateada(this.fecha),
+    //   this.objUsuario.id,
+    //   this.objUsuario.codigo
+    // );
+    //
+    // cargarPeticion.onDidDismiss( () => {
+    //   peticionEnCurso.unsubscribe();
+    // });
+    //
+    // let peticionEnCurso = peticion.map( resp => {
+    //   let datos = resp.json();
+    //
+    //   if (datos.success) {
+    //     datos = datos.response;
+    //     this.visitas = [];
+    //
+    //     for (let indice in datos) {
+    //       let visita = datos[indice];
+    //       this.visitas.push(visita);
+    //     }
+    //   } else {
+    //     let mensaje:string = datos.message;
+    //
+    //     /* Se anulo la sesión de este dispositivo contacte con gerencia por favor. */
+    //     if (mensaje.toLowerCase().startsWith("se anulo la sesión ")) {
+    //       this.util.toast(mensaje);
+    //       this._ap.setSesionAnulada(true);
+    //     }
+    //   }
+    //
+    // }).subscribe(
+    //   success => {
+    //     cargarPeticion.dismiss();
+    //     this.noHayConexion = false;
+    //   },
+    //   err => {
+    //     cargarPeticion.dismiss();
+    //     this.noHayConexion = true;
+    //     this.util.toast('Hubo un error al conectarse con el servidor.');
+    //   }
+    // );
+  }
 
   public confirmarRegistrarSalida(visita, slidingItem) {
     let alert = this.alertCtrl.create({
     title: `¿Registrar salida de ${visita.invitado_nombre} ${visita.invitado_apellido}?`,
-    buttons: [
-      {
-        text: 'No',
-        role: 'cancel',
-        handler: () => {
-          slidingItem.close();
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            slidingItem.close();
+          }
+        },
+        {
+          text: 'Si',
+          handler: () => {
+            this.registrarSalida(visita, slidingItem);
+          }
         }
-      },
-      {
-        text: 'Si',
-        handler: () => {
-          this.registrarSalida(visita, slidingItem);
-        }
-      }
-    ]
-  });
-  alert.present();
+      ]
+    });
+
+    alert.present();
   }
 
   private registrarSalida(visita, slidingItem) {
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'registrando hora de salida',
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Registrando hora de salida.',
       enableBackdropDismiss: true
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
-    let peticion = this._mp.registrarSalida(visita.id);
+    let peticion;
 
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
+    if (visita.tipo == "Invitacion") {
+      peticion = this._mp.registrarSalida(
+        visita.id,
+        this.objUsuario.id,
+        this.objUsuario.codigo
+      );
+    } else if (visita.tipo == "Evento") {
+      peticion = this._ep.registrarSalidaInvitadoEvento(
+        visita.id,
+        this.objUsuario.id,
+        this.objUsuario.codigo
+      );
+    }
+
+    if (!peticion) {
+      return;
+    }
+
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map(resp => {
+    this.peticionEnCurso = peticion.map(resp => {
       let datos = resp.json();
 
       if (datos.success) {
         /* fecha y hora */
-        let fecha = this.util.getFechaNormal() + this.util.getFechaActual().substring(10, 19);
+        let fecha = this.util.getFechaHoraNormal();
         visita.hora_salida = fecha;
+      } else {
+        let mensaje:string = datos.message;
+
+        /* Se anulo la sesión de este dispositivo contacte con gerencia por favor. */
+        if (mensaje.toLowerCase().startsWith("se anulo la sesión ")) {
+          this.util.toast(mensaje);
+          this._ap.setSesionAnulada(true);
+        }
       }
 
     }).subscribe(
       success => {
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
         slidingItem.close();
         this.noHayConexion = false;
       }, err => {
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
         slidingItem.close();
         this.noHayConexion = true;
       }

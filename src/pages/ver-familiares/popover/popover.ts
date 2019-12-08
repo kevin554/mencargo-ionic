@@ -13,7 +13,7 @@ export class PopoverPage {
   private objFamiliar:any;
   private familiares:any[];
   private cuentaDePago:boolean;
-  private soloLectura:boolean;
+  public soloLectura:boolean;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       public viewCtrl: ViewController, public app: App,

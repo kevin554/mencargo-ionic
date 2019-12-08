@@ -7,11 +7,7 @@
 
 <ion-content padding>
 
-  <!-- PARA TENER EL CONTENIDO SIEMPRE EN EL CENTRO DE LA PANTALLA -->
-  <ion-grid style="height: 100%">
-    <ion-row justify-content-center align-items-center style="height: 100%">
-
-      <!-- EL CONTENIDO -->
+    <div style="margin-top: 10%">
       <!-- LA CODIFICACION DE LA VIVIENDA -->
       <div class="contenedor-vivienda centrar-hor" (click)="editarCodificacion()">
         <img [src]="(objVivienda?.familia) ? 'assets/imgs/home-green.png' :
@@ -36,11 +32,10 @@
             [class.error]="formularioVivienda.controls.familia.dirty">
           {{error_familia}}
         </p>
-
         <!-- CAMPO DE LA DIRECCION -->
         <ion-item>
           <ion-icon name="home" item-start color="naranja"></ion-icon>
-          <ion-label floating>Direccion</ion-label>
+          <ion-label floating>Dirección</ion-label>
           <ion-input type="text" [readonly]="!seEstaEditando"
               formControlName="direccion"
               [class.invalid]="!formularioVivienda.controls.direccion.valid &&
@@ -51,11 +46,10 @@
             [class.error]="formularioVivienda.controls.direccion.dirty">
           {{error_direccion}}
         </p>
-
         <!-- CAMPO DEL TELEFONO -->
         <ion-item>
           <ion-icon name="call" item-start color="verde"></ion-icon>
-          <ion-label floating>Telefono 1</ion-label>
+          <ion-label floating>Teléfono 1</ion-label>
           <ion-input type="number" [readonly]="!seEstaEditando"
               formControlName="telefono"
               [class.invalid]="!formularioVivienda.controls.telefono.valid &&
@@ -66,11 +60,10 @@
             [class.error]="formularioVivienda.controls.telefono.dirty">
           {{error_telefono}}
         </p>
-
         <!-- CAMPO DEL TELEFONO 2 -->
         <ion-item>
           <ion-icon name="call" item-start color="verde"></ion-icon>
-          <ion-label floating>Telefono 2</ion-label>
+          <ion-label floating>Teléfono 2</ion-label>
           <ion-input type="number" [readonly]="!seEstaEditando"
               formControlName="celular"
               [class.invalid]="!formularioVivienda.controls.celular.valid &&
@@ -82,11 +75,8 @@
           {{error_celular}}
         </p>
       </form>
-      <!-- FIN DEL CONTENIDO -->
-
-    </ion-row>
-  </ion-grid>
-
+    </div>
+    
 </ion-content>
 
 
@@ -97,9 +87,9 @@
       <ion-icon name="book"></ion-icon>
       Integrantes
     </button>
-    <button ion-button icon-start  (click)="editar()">
+    <button ion-button icon-start (click)="editar()">
       <img height="100%" [src]="textoGuardarEditar === 'guardar' ?
-          'assets/imgs/disquette-transparent.png' : 'assets/imgs/round-edit.png'">
+          'assets/imgs/disquette-transparent.png' : 'assets/imgs/edit.png'">
       {{textoGuardarEditar}}
     </button>
   </div>

@@ -2,7 +2,7 @@
 
   <ion-navbar color="primary">
     <ion-title>{{objCondominio?.nombre_condominio}}</ion-title>
-    <ion-buttons start>
+    <ion-buttons end>
       <button ion-button icon-only (click)="desplegarMenu($event)">
         <ion-icon name="more"></ion-icon>
       </button>
@@ -15,12 +15,9 @@
 <ion-content padding>
 
   <centrar-componente>
-
     <img src="assets/imgs/mencargo.png" alt="logo y marca" id="logo-mencargo"
         class="centrar-hor" padding-vertical>
-
     <ion-grid text-center>
-
       <ion-row *ngIf="puede('Registrar Ingreso')">
         <!-- registro de ingreso -->
         <ion-col col-5 class="centrar-hor" (tap)="tap('Registrar Ingreso')">
@@ -32,7 +29,6 @@
           </div>
         </ion-col>
       </ion-row>
-
       <ion-row>
         <!-- viviendas -->
         <ion-col col-5 class="centrar-hor" *ngIf="puede('Ver Viviendas')"
@@ -51,7 +47,7 @@
             <img [src]="fueTocado('Ver Visitas') ?
                 'assets/imgs/round-people-orange.png' :
                 'assets/imgs/round-people-blue.png'">
-            <p>Visitas</p>
+            <p>Visitasss</p>
           </div>
         </ion-col>
         <!-- solicitud de ingreso -->
@@ -71,14 +67,23 @@
             <img [src]="fueTocado('Registrar Salida') ?
                 'assets/imgs/round-exit-orange.png' :
                 'assets/imgs/round-exit-blue.png'"/>
-            <p>Registro de salida</p>
+            <p>Registro de salidas</p>
           </div>
+        </ion-col>
+        <!--enviar notificaciones-->
+        <ion-col col-5 class="centrar-hor" (tap)="tap('Ver notificaciones')"
+                 *ngIf="objRol.nombre_rol != 'Super Administrador'">
+          <div>
+            <img [src]="fueTocado('Ver notificaciones') ?
+                  'assets/imgs/round-notification-orange.png' :
+                  'assets/imgs/round-notification-blue.png'">
+          </div>
+          <p>Enviar notificaciones</p>
         </ion-col>
       </ion-row>
     </ion-grid>
-
   </centrar-componente>
 
-  <swal #alertaEstadoIngreso title type></swal>
+  <swal #alertaIngreso title type></swal>
 
 </ion-content>

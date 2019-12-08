@@ -1,16 +1,19 @@
 page-inicio-administrador {
 
-  // centrar-componente img.centrar-hor {
-  //   width: 35%;
-  //   margin-bottom: 15px;
-  // }
-
   img {
     width: 75%;
   }
 
   #logo-mencargo {
     width: 55%;
+  }
+
+  @media (min-width: 768px) {
+
+    p {
+      font-size: 24px;
+    }
+
   }
 
 }

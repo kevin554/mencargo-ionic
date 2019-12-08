@@ -20,13 +20,15 @@ export class CambiarTemaComponent {
   public cambiarTema() {
     // si se habilitó el modo nocturno
     if (this.tema) {
-      this._up.cambiarModoNocturno(true);
+      // this._up.cambiarModoNocturno(true);
+      this._up.setModoNocturno(true);
       this.global.set('theme', 'tema-oscuro');
 
       // la barra de navegacion a color oscura
       this.statusBar.backgroundColorByHexString("#000000");
     } else {
-      this._up.cambiarModoNocturno(false);
+      // this._up.cambiarModoNocturno(false);
+      this._up.setModoNocturno(false);
       this.global.set('theme', '');
 
       // la barra de navegacion a color normal

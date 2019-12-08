@@ -1,0 +1,59 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Lista de contactos</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-item>
+    <ion-label color="primary" floating>Nombre del grupo</ion-label>
+    <ion-input [(ngModel)]="nombreGrupo"></ion-input>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let contacto of contactos" margin-vertical
+              style="padding-left: 0px !important"
+              (tap)="seleccionarContacto(contacto)">
+      <!-- <ng-container *ngIf="invitado.estado == 2"> -->
+      {{contacto?.nombre}} {{contacto?.apellido}}
+      <ion-icon name="checkmark" item-end color="primary"
+                *ngIf="contacto?.seleccionado">
+      </ion-icon>
+      <!-- </ng-container> -->
+    </ion-item>
+  </ion-list>
+
+  <div text-center>
+    <button ion-button color="secundario" (tap)="agregarContacto()">
+      Agregar nuevo contacto
+    </button>
+  </div>
+
+  <!--<ion-list>-->
+    <!--<ion-item *ngFor="let contacto of contactos" margin-vertical-->
+        <!--style="padding-left: 0px !important"-->
+        <!--(click)="seleccionarContacto(contacto)">-->
+      <!--<ion-icon name="checkmark" item-end color="primary"-->
+          <!--*ngIf="contacto.seleccionado">-->
+      <!--</ion-icon>-->
+      <!--{{contacto.nombre}} {{contacto.apellido}}-->
+    <!--</ion-item>-->
+  <!--</ion-list>-->
+
+  <!--<ion-fab right bottom color="secondary">-->
+    <!--<button ion-fab (tap)="agregarContacto()">-->
+      <!--<ion-icon name="add"></ion-icon>-->
+    <!--</button>-->
+  <!--</ion-fab>-->
+
+  <ion-fab right bottom>
+    <button ion-fab (tap)="crearGrupo()">
+      <ion-icon name="arrow-dropright"></ion-icon>
+    </button>
+  </ion-fab>
+
+</ion-content>

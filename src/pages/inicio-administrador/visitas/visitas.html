@@ -12,12 +12,12 @@
       <ion-datetime [(ngModel)]="fecha" (ionChange)="cargarVisitas()"
           min="2018"
           displayFormat="DD de MMMM del YYYY" pickerFormat="DD MMM YYYY"
-          doneText="listo" cancelText="cancelar">
+          doneText="Listo" cancelText="Cancelar">
       </ion-datetime>
     </ion-item>
     <!-- EL BUSCADOR -->
     <ion-item padding-horizontal class="expandible">
-      <ion-label>buscar</ion-label>
+      <ion-label>Buscar</ion-label>
       <ion-input type="text" [(ngModel)]="busqueda"></ion-input>
       <ion-icon name="search" item-end (click)="buscarVisitas()"></ion-icon>
     </ion-item>
@@ -46,15 +46,15 @@
         <ion-item (click)="verVisita(visita)">
           <ion-grid>
             <ion-row>
-              <ion-col>
+              <ion-col col-3>
                 <p>
                   {{obtenerHora(visita.hora_ingreso) ? obtenerHora(visita.hora_ingreso) : '---' }}
                 </p>
               </ion-col>
-              <ion-col>
+              <ion-col col-5>
                 <p>{{visita.invitado_nombre}} {{visita.invitado_apellido}}</p>
               </ion-col>
-              <ion-col>
+              <ion-col col-3>
                 <p text-center>
                   {{visita.vivienda != 'N' ? visita.vivienda : ''}} - {{visita.familia}}
                 </p>
@@ -73,10 +73,6 @@
       </ion-item-sliding>
     </ng-container>
   </ion-list>
-
-  <!-- EMPTY STATE PARA LA FALTA DE CONEXION  -->
-  <empty-state *ngIf="noHayConexion" [img]="'assets/imgs/cloud-off.png'">
-  </empty-state>
 
   <!-- EMPTY STATE PARA CUANDO LA LISTA DE VISITAS ESTÁ VACIA -->
   <empty-state *ngIf="!visitas || visitas?.length === 0"

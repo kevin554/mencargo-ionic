@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { GestionarPage } from './gestionar';
-
 import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({

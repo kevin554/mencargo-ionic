@@ -15,6 +15,15 @@ page-registrar-familiar {
     img {
       padding-bottom: 8px;
     }
+
+  }
+
+  p.error {
+    text-align: center;
+  }
+
+  .item-inner {
+    padding-right: 0px !important;
   }
 
   .contenedor-codificacion {
@@ -22,14 +31,6 @@ page-registrar-familiar {
     top: 35%;
     width: 100%;
     text-align: center;
-  }
-
-  ion-select {
-    background: transparent !important;
-  }
-
-  .select-text {
-    color: #000 !important;
   }
 
 }

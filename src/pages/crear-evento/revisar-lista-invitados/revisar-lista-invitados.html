@@ -14,11 +14,14 @@
 
 <ion-content padding>
 
-  <h1>{{objEvento?.nombre}}</h1>
+  <!-- <h1>{{objEvento?.nombre}}</h1> -->
+  <!-- <ion-fab id="fab-titulo-evento"> -->
+    <h1 text-center padding-top>{{objEvento?.nombre}}</h1>
+  <!-- </ion-fab> -->
 
   <ion-list>
     <ion-item *ngFor="let invitado of invitados">
-      {{invitado.nombre}}
+      {{invitado?.nombre}} {{invitado?.apellido}}
     </ion-item>
   </ion-list>
 

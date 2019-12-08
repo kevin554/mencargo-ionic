@@ -11,12 +11,11 @@
 
 <ion-content >
 
-  <form [formGroup]="formuRegInv" padding >
-
+  <form [formGroup]="formuRegInv" padding>
     <!-- CAMPO DEL NOMBRE -->
     <ion-item>
       <ion-icon name="contact" item-start></ion-icon>
-      <ion-label floating>nombre</ion-label>
+      <ion-label floating>Nombre</ion-label>
       <ion-input type="text" formControlName="nombre"
           [class.invalid]="!formuRegInv.controls.nombre.valid &&
           (formuRegInv.controls.nombre.dirty || intentoIngresar)">
@@ -26,11 +25,10 @@
         [class.error]="formuRegInv.controls.nombre.dirty">
       {{error_nombre}}
     </p>
-
     <!-- CAMPO DEL APELLIDO -->
     <ion-item>
       <ion-icon item-start></ion-icon>
-      <ion-label floating>apellidos</ion-label>
+      <ion-label floating>Apellidos</ion-label>
       <ion-input type="text" formControlName="apellido"
           [class.invalid]="!formuRegInv.controls.apellido.valid &&
           (formuRegInv.controls.apellido.dirty || intentoIngresar)">
@@ -40,41 +38,39 @@
         [class.error]="formuRegInv.controls.apellido.dirty">
       {{error_apellido}}
     </p>
-
     <!-- CAMPO DE LA FECHA -->
     <ion-item *ngIf="!soloRegistrarAmigo">
       <ion-icon name="calendar" item-start color="verde"></ion-icon>
-      <!-- <ion-label floating text-wrap>la invitacion es valida desde las 00:00 hasta las 23:59 de la fecha seleccionada</ion-label> -->
-      <ion-label floating><p text-wrap>la invitacion es valida desde las 00:00 hasta las 23:59 de la fecha seleccionada</p></ion-label>
-      <ion-datetime formControlName="fecha" monthShortNames="ene, feb, mar, abr,
-          may, jun, jul, ago, sep, oct, nov, dic" doneText="listo"
+      <ion-label floating>
+        <p text-wrap>La invitación es válida desde las 00:00 hasta las 23:59 de
+          la fecha seleccionada
+        </p>
+      </ion-label>
+      <ion-datetime formControlName="fecha" doneText="listo"
           displayFormat="DD de MMMM del YYYY" pickerFormat="DD MMM YYYY"
-          cancelText="cancelar" >
+          cancelText="cancelar" [min]="util.getFechaNormal()">
       </ion-datetime>
     </ion-item>
     <p [class.error]="formuRegInv.controls.fecha.dirty" *ngIf="!soloRegistrarAmigo">
       {{error_fecha}}
     </p>
-
     <!-- PARA EXPANDIR EL FORMULARIO -->
     <button ion-fab (click)="mostrarFormularioDetallado()" mini float-right>
       {{detallado? '-' : '+'}}
     </button>
-
     <!-- CAMPO DEL CI -->
     <ion-item *ngIf="detallado">
       <ion-icon name="create" item-start color="naranja"></ion-icon>
-      <ion-label floating>ci (opcional)</ion-label>
+      <ion-label floating>CI (opcional)</ion-label>
       <ion-input type="number" formControlName="ci"
           [class.invalid]="!formuRegInv.controls.ci.valid &&
           (formuRegInv.controls.ci.dirty || intentoIngresar)">
       </ion-input>
     </ion-item>
-
     <!-- CAMPO DEL CELULAR -->
     <ion-item *ngIf="detallado">
       <ion-icon name="call" item-start color="verde"></ion-icon>
-      <ion-label floating>celular (opcional)</ion-label>
+      <ion-label floating>Celular (opcional)</ion-label>
       <ion-input type="number" formControlName="celular"
           [class.invalid]="!formuRegInv.controls.celular.valid &&
           (formuRegInv.controls.celular.dirty || intentoIngresar)">
@@ -84,11 +80,10 @@
         [class.error]="formuRegInv.controls.celular.dirty">
       {{error_celular}}
     </p>
-
     <!-- CAMPO DE LA PLACA -->
     <ion-item *ngIf="detallado && !soloRegistrarAmigo">
       <ion-icon name="closed-captioning" item-start></ion-icon>
-      <ion-label floating>placa (opcional)</ion-label>
+      <ion-label floating>Placa (opcional)</ion-label>
       <ion-input type="text" formControlName="placa"
           [class.invalid]="!formuRegInv.controls.placa.valid &&
           (formuRegInv.controls.placa.dirty || intentoIngresar)">
@@ -103,7 +98,6 @@
   <ion-fab bottom right>
     <button ion-fab class="sin-sombra" *ngIf="!soloRegistrarAmigo"
         (click)="enviarInvitacion()">
-      <!-- <img src="assets/imgs/round-white-sent-email1.png" alt="enviar"> -->
       <img src="assets/imgs/sent-mail-white.png" alt="enviar">
     </button>
     <button ion-fab class="sin-sombra" *ngIf="soloRegistrarAmigo"

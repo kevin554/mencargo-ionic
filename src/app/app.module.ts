@@ -10,14 +10,15 @@ import { MODULES, PROVIDERS } from './app.imports';
 
 @NgModule({
   declarations: [
-    MyApp
+    MyApp,
   ],
   imports: [
     IonicModule.forRoot(MyApp, {
       monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
         'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre' ],
       monthShortNames: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago',
-        'sep', 'oct', 'nov', 'dic']
+        'sep', 'oct', 'nov', 'dic'],
+      backButtonText: 'Atras'
     }),
     IonicStorageModule.forRoot(),
     HttpModule,
@@ -29,7 +30,7 @@ import { MODULES, PROVIDERS } from './app.imports';
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    PROVIDERS
+    PROVIDERS,
   ]
 })
 export class AppModule {}

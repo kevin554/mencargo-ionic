@@ -2,28 +2,88 @@
 
   <ion-navbar color="primary">
     <ion-title>Lista de contactos</ion-title>
+    <!-- PARA CONFIGURAR EL EVENTO (SI YA ESTÁ CREADO) -->
+    <ion-buttons end *ngIf="viendoListaInvitados">
+      <button ion-button icon-only (tap)="configurarEvento()">
+        <ion-icon name="cog"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding esconder-boton-flotante>
 
-  <button ion-button class="centrar-hor">Agregar Contacto</button>
+  <h3 text-center *ngIf="viendoListaInvitados">{{objEvento?.nombre}}</h3>
 
-  <ion-list>
-    <ion-item *ngFor="let contacto of contactos" margin-vertical style="padding-left: 0px !important"
+  <ion-grid>
+    <ion-row>
+      <ion-col col-6>
+        <button ion-button (tap)="agregarNuevoInvitado()">
+          {{ viendoListaInvitados ? "Agregar más invitados" : "Agregar nuevo contacto"}}
+        </button>
+      </ion-col>
+      <ion-col col-6 *ngIf="!viendoListaInvitados">
+        <button ion-button (tap)="verGrupos()">
+          Invitar a un grupo
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+  <ion-list *ngIf="!viendoListaInvitados">
+    <!-- <ng-container *ngFor="let contacto of contactos" >
+      <ion-item margin-vertical *ngIf="!contacto.seleccionado"
+          style="padding-left: 0px !important"
+          (click)="seleccionarContacto(contacto)">
+
+            <ion-icon name="checkmark" item-end color="primary"
+                *ngIf="contacto.seleccionado">
+            </ion-icon>
+            {{contacto.nombre}} {{contacto.apellido}}
+
+      </ion-item>
+    </ng-container> -->
+
+    <ion-item *ngFor="let contacto of contactos" margin-vertical
+        style="padding-left: 0px !important"
         (click)="seleccionarContacto(contacto)">
-      <ion-icon name="checkmark" item-end color="primary"
-          *ngIf="contacto.seleccionado">
-      </ion-icon>
-      {{contacto.nombre}}
+
+          <ion-icon name="checkmark" item-end color="primary"
+              *ngIf="contacto.seleccionado">
+          </ion-icon>
+          {{contacto.nombre}} {{contacto.apellido}}
+
     </ion-item>
   </ion-list>
 
-  <ion-fab right bottom>
+  <!-- PARA CONFIRMAR CREAR EL EVENTO -->
+  <ion-fab right bottom *ngIf="!viendoListaInvitados && !invitados">
     <button ion-fab (click)="revisarListaInvitados()">
       <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-list *ngIf="viendoListaInvitados">
+    <ion-item *ngFor="let invitado of invitados" margin-vertical
+         style="padding-left: 0px !important">
+      <!-- <ng-container *ngIf="invitado.estado == 2"> -->
+        {{invitado.nombre_invitado}}
+        <ion-icon name="checkmark" item-end color="primary"
+            *ngIf="invitado.estado == 2">
+        </ion-icon>
+      <!-- </ng-container> -->
+
+    </ion-item>
+  </ion-list>
+
+  <!-- PARA AGREGAR NUEVOS INVITADOS AL EVENTO -->
+  <ion-fab right bottom *ngIf="hayQueAgregarNuevosInvitados">
+    <button ion-fab (click)="agregarNuevosInvitados()">
+      <ion-icon name="checkmark"></ion-icon>
     </button>
   </ion-fab>
 

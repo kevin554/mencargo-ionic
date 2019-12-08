@@ -3,9 +3,9 @@ import { AlertController, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AppState } from './app.global';
-import { AdministradorProvider, UsuarioProvider, UtilServiceProvider } from '../providers/index.services';
-import { AndroidFingerprintAuth, AFAAuthOptions } from '@ionic-native/android-fingerprint-auth';
+import { AdministradorProvider, MovimientoProvider, IngresosProvider, UsuarioProvider, UtilServiceProvider } from '../providers/index.services';
 import { HeaderColor } from '@ionic-native/header-color';
+import { Network } from '@ionic-native/network';
 
 @Component({
   templateUrl: 'app.html'
@@ -15,41 +15,86 @@ export class MyApp {
   rootPage:any;
   intentosRestantesIngreso:number;
 
-  constructor(private platform: Platform, statusBar: StatusBar,
-      splashScreen: SplashScreen, _ap: AdministradorProvider,
+  constructor(platform: Platform, statusBar: StatusBar,
+      splashScreen: SplashScreen, private _ap: AdministradorProvider,
       private _up: UsuarioProvider, public global: AppState,
-      private androidFingerprintAuth: AndroidFingerprintAuth,
-      public alertCtrl: AlertController, private util: UtilServiceProvider,
-      headerColor: HeaderColor) {
-    this.intentosRestantesIngreso = 3;
-
+      public alertCtrl: AlertController, private _ig: IngresosProvider,
+      headerColor: HeaderColor, private network: Network,
+      private util: UtilServiceProvider, private _mp: MovimientoProvider) {
     platform.ready().then(() => {
 
-        // veo si se inició como propietario
-        _up.cargarStorage().then( ()=> {
-          if (_up.activo()) {
-            // si el modo seguro está habilitado
-            if (_up.getModoSeguro()) {
-              this.verificarLectorHuellas(_up.getUsuario());
-              // this.mostrarPantallaDesbloqueo(_up.getUsuario());
-            } else {
-              this.rootPage = "InicioPropietarioPage"
-            }
-          } else if (!this.rootPage) {
-            this.rootPage = 'InicioPage';
-          }
-        });
+      // veo si se inició como propietario
+      // halsdfklasdf
+      _up.cargarStorage().then( ()=> {
 
-      // o se inició como administrador
-      _ap.cargarStorage().then( () => {
-        if (_ap.activo()) {
-          this.rootPage = 'InicioAdministradorPage';
-        } else if (!this.rootPage) {
-          this.rootPage = 'InicioPage';
+        this.rootPage = 'InicioPage';
+
+        if (_up.activo()) {
+          // si el modo seguro está habilitado
+          if (_up.getModoSeguro()) {
+            this.verificarLectorHuellas(_up.getUsuario());
+          } else {
+            this.rootPage = "InicioPropietarioPage";
+          }
+        } else {
+
+          // o se inició como administrador
+          _ap.cargarStorage().then( () => {
+
+            if (_ap.activo()) {
+              this.rootPage = 'InicioAdministradorPage';
+            }
+
+          });
         }
+        // else if (!this.rootPage) {
+        //   this.rootPage = 'InicioPage';
+        // }
+
       });
 
-      if (_up.getModoNocturno()) {
+      this.network.onConnect().subscribe(() => {
+        // console.log("hay que insertar: ");
+
+        if (!platform.is("cordova")) return;
+
+        _ig.getDatabaseState().subscribe( listo => {
+          if (listo) {
+            _ig.seleccionarTodas().then( (datos) => {
+              for (let i in datos) {
+                let ingreso = datos[i];
+                // console.log(JSON.stringify(ingreso));
+
+                this.insertarIngresoPendiente(ingreso);
+              }
+            });
+          }
+        });
+        // console.log('network connected!');
+        // // We just got a connection but we need to wait briefly
+        //  // before we determine the connection type. Might need to wait.
+        // // prior to doing any api requests as well.
+        // setTimeout(() => {
+        //   if (this.network.type === 'wifi') {
+        //     console.log('we got a wifi connection, woohoo!');
+        //   } else {
+        //     console.log(this.network.type);
+        //   }
+        // }, 3000);
+      });
+
+      // // o se inició como administrador
+      // _ap.cargarStorage().then( () => {
+      //   // if (this.rootPage) return;
+      //
+      //   if (_ap.activo() && !this.rootPage) {
+      //     this.rootPage = 'InicioAdministradorPage';
+      //   } else if (!this.rootPage) {
+      //     this.rootPage = 'InicioPage';
+      //   }
+      // });
+
+      if (_up.getModoNocturno2()) {
         this.global.set('theme', 'tema-oscuro');
       } else {
         global.set('theme', '');
@@ -58,61 +103,62 @@ export class MyApp {
 
       global.set('modo-seguro', 'inhabilitado');
 
-      statusBar.backgroundColorByHexString("#002e77"); // 00367c
+      statusBar.backgroundColorByHexString("#002e77");
       headerColor.tint("#002e77");
       splashScreen.hide();
     });
   }
 
+  private insertarIngresoPendiente(ingreso) {
+    let celular = 0;
+    let cantidad = 24;
+    let tiempo = "horas";
+    let fecha = this.util.getFechaActual();
+    let expedicion = "SC";
+    let horaIngreso = this.util.getFechaActual();
+
+    let peticion = this._mp.insertarInvitacion(
+      ingreso.nombre,
+      ingreso.apellido,
+      cantidad,
+      tiempo,
+      fecha,
+      ingreso.ci,
+      expedicion,
+      celular,
+      ingreso.placa,
+      ingreso.fkfamilia,
+      ingreso.id,
+      ingreso.observaciones,
+      this._ap.getNombre(),
+      this.util.getFechaActual(),
+      horaIngreso,
+      this._ap.getId(),
+      this._ap.getCodigo()
+    );
+
+    let peticionEnCurso = peticion.map( resp => {
+      let datos = resp.json();
+
+      if (datos.success) {
+        datos = datos.response;
+
+        this._ig.eliminar(ingreso.id);
+      } else {
+        // console.log("!datos.success: " + datos.message);
+      }
+
+    }).subscribe(
+      success => {
+        // console.log("success: " + JSON.stringify(success));
+      }, err => {
+        // console.log("err: " + JSON.stringify(err));
+      }
+    );
+  }
+
   private verificarLectorHuellas(usuario, switchModoSeguro?) {
-    // this.androidFingerprintAuth.isAvailable().then(
-    //   (result) => {
-    //
-    //     console.log('result ' + JSON.stringify(result))
-    //
-    //     if(result.isAvailable) {
-    //       /* esta disponible */
-    //       let data:AFAAuthOptions = {
-    //         clientId: 'myAppName',
-    //         locale: 'es' /* en español */
-    //       }
-    //
-    //       this.androidFingerprintAuth.encrypt(data).then(
-    //         result => {
-    //            if (result.withFingerprint) {
-    //              console.log('ingreso exitoso')
-    //              this.rootPage = "InicioPropietarioPage";
-    //            } else if (result.withBackup) {
-    //              console.log('ingreso exitoso')
-    //              this.rootPage = "InicioPropietarioPage";
-    //            } else {
-    //              // nunca entra
-    //              console.log('else');
-    //            }
-    //         }).catch(
-    //           error => {
-    //             console.log('error ' + console.log(JSON.stringify(error)))
-    //
-    //             // nunca entra
-    //             if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
-    //               console.log('Fingerprint authentication cancelled');
-    //             } else {
-    //               console.error('in the catch of encrypt ' + error)
-    //             }
-    //           }
-    //         );
-    //
-    //     } else {
-    //       // nunca
-    //       console.log('lector no disponible')
-    //     }
-    // }, err => {
-    //   console.log('err ' + console.log(JSON.stringify(err)))
-    // }).catch(
-    //   error => {
-        this.mostrarPantallaDesbloqueo(usuario)
-    //   }
-    // );
+    this.mostrarPantallaDesbloqueo(usuario)
   }
 
   private mostrarPantallaDesbloqueo(usuario?) {

@@ -42,16 +42,28 @@ export class FamiliaProvider {
   * id, nombre, telefono, celular, correo, ci, genero, expedicion, token,
   * fkvivienda
   */
-  public seleccionarPorIdVivienda(idVivienda) {
+  public seleccionarPorIdVivienda(idVivienda, idUsuario, codigo) {
     let link = URL + "/api/v1/get_familiares_vivienda";
 
     let objStr = `{
-      "idvivienda": ${idVivienda}
+      "idvivienda": ${idVivienda},
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);
   }
 
+
+  public loginPropietario(username, password) {
+    let link = URL + "/api/v1/login_familiar";
+    let objStr = `{
+      "username": "${username}",
+      "password": "${password}"
+    }`;
+
+    return this.http.post(link, objStr);
+  }
   /**
   * inserta un familiar
   * el formato de 'fechaadicion' debe ser DD/MM/YYYY HH:MM:SS

@@ -1,0 +1,32 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Invitados</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="Deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list>
+    <ion-item *ngFor="let invitado of invitados">
+      <ion-label>{{invitado?.nombre_invitado}} {{invitado?.apellido_invitado}}</ion-label>
+      <ion-checkbox [checked]="invitado.estado === 2" item-right #checkIngreso
+          (click)="confirmarRegistrarIngreso(invitado, checkIngreso)">
+      </ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+  <swal #alerta title="Error" type="error"></swal>
+
+</ion-content>

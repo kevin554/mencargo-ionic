@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { App, AlertController, IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { UsuarioProvider, UtilServiceProvider } from '../../providers/index.services';
 import { AppState } from '../../app/app.global';
-import { AndroidFingerprintAuth, AFAAuthOptions } from '@ionic-native/android-fingerprint-auth';
+// import { AndroidFingerprintAuth, AFAAuthOptions } from '@ionic-native/android-fingerprint-auth';
 import { Firebase } from '@ionic-native/firebase';
-import { Badge } from '@ionic-native/badge';
 
 @IonicPage()
 @Component({
@@ -22,9 +21,9 @@ export class VerPerfilPropietarioPage {
   constructor(public app: App, public navParams: NavParams,
       public navCtrl: NavController, public global: AppState,
       public viewCtrl: ViewController, private _up: UsuarioProvider,
-      private androidFingerprintAuth: AndroidFingerprintAuth,
+      // private androidFingerprintAuth: AndroidFingerprintAuth,
       public alertCtrl: AlertController, private util: UtilServiceProvider,
-      private firebase: Firebase, private badge: Badge) {
+      private firebase: Firebase) {
     if (navParams.get("familiar")) {
       this.objFamiliar = navParams.get("familiar");
     }
@@ -43,9 +42,8 @@ export class VerPerfilPropietarioPage {
     });
 
     this._up.cerrarSesion();
-    this.badge.clear().then(succes=> {}).catch(err => {});;
 
-    this.navCtrl.setRoot('InicioPage');
+    this.navCtrl.setRoot("InicioPage");
   }
 
   public cambiarModoSeguro(switchModoSeguro) {
@@ -62,62 +60,50 @@ export class VerPerfilPropietarioPage {
   }
 
   private verificarLectorHuellas(switchModoSeguro) {
-    // this.androidFingerprintAuth.isAvailable().then(
-    //   (result) => {
-    //     if(result.isAvailable) {
-    //       /* esta disponible */
-    //       let data:AFAAuthOptions = {
-    //         clientId: 'myAppName',
-    //         locale: 'es' /* en español */
-    //       }
-    //
-    //       this.androidFingerprintAuth.encrypt(data).then(
-    //         result => {
-    //            if (result.withFingerprint) {
-    //              console.log('ingreso exitoso')
-    //            } else if (result.withBackup) {
-    //              console.log('ingreso exitoso')
-    //            } else {
-    //              // nunca entra
-    //              console.log('else');
-    //            }
-    //         }).catch(
-    //           error => {
-    //             // nunca entra
-    //             if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
-    //               console.log('Fingerprint authentication cancelled');
-    //             } else {
-    //               console.error('in the catch of encrypt ' + error)
-    //             }
-    //           }
-    //         );
-    //
-    //     } else {
-    //       // nunca entra
-    //       console.log('lector no disponible')
-    //     }
-    // }).catch(
-    //   error => {
-
-        if (this.modoSeguroHabilitado()) {
-          this.confirmarDeshabilitarmodoSeguro(switchModoSeguro);
-        } else {
-          this.confirmarHabilitarmodoSeguro(switchModoSeguro);
-        }
-
-    //   }
-    // );
+  //   this.androidFingerprintAuth.isAvailable().then(
+  //     result => {
+  //       console.log('is available: ' + JSON.stringify(result));
+  //
+  //       if(result.isAvailable) {
+  //         /* esta disponible */
+  //         let data:AFAAuthOptions = {
+  //           clientId: 'myAppName',
+  //           locale: 'es' /* en español */
+  //         }
+  //
+  //         this.androidFingerprintAuth.encrypt(data).then(
+  //           result => {
+  //             console.log('encrypt: ' + result);
+  //
+  //
+  //              if (result.withFingerprint) {
+  //                console.log('ingreso exitoso')
+  //              } else if (result.withBackup) {
+  //                console.log('ingreso exitoso')
+  //              }
+  //           }, arr => {
+  //             console.log('arr')
+  //             // cuando se cancela
+  //           })
+  //       }
+  //   }
+  // )
+    if (this.modoSeguroHabilitado()) {
+      this.confirmarDeshabilitarmodoSeguro(switchModoSeguro);
+    } else {
+      this.confirmarHabilitarmodoSeguro(switchModoSeguro);
+    }
   }
 
   private confirmarDeshabilitarmodoSeguro(switchModoSeguro) {
     let alert = this.alertCtrl.create({
       title: '¿Desea desactivar el modo seguro?',
-      message: `<p>ingrese su contraseña</p>
-      <p text-center>si olvidó su contraseña ingrese su ci</p>`,
+      message: `<p>Ingrese su contraseña</p>
+      <p text-center>Si olvidó su contraseña ingrese su ci</p>`,
       inputs: [
         {
           name: 'contra',
-          placeholder: 'contraseña',
+          placeholder: 'Contraseña',
           type: 'password'
         }
       ],
@@ -143,7 +129,7 @@ export class VerPerfilPropietarioPage {
 
   private deshabilitarmodoSeguro(password, switchModoSeguro) {
     if (!password) {
-      this.util.toast('debe ingresar su contraseña', 2000)
+      this.util.toast('Debe ingresar su contraseña', 2000)
       this.confirmarDeshabilitarmodoSeguro(switchModoSeguro);
 
       return;
@@ -163,7 +149,7 @@ export class VerPerfilPropietarioPage {
     }
 
     if (this._up.getPasswordModoSeguro() !== password) {
-      this.util.toast('contraseña incorrecta', 2000);
+      this.util.toast('Contraseña incorrecta', 2000);
       this.confirmarDeshabilitarmodoSeguro(switchModoSeguro);
 
       return;
@@ -188,16 +174,16 @@ export class VerPerfilPropietarioPage {
   public confirmarHabilitarmodoSeguro(switchModoSeguro) {
     let alert = this.alertCtrl.create({
       title: '¿Desea activar el modo seguro?',
-      message: 'deberá autenticarse cada vez que utilice la aplicacion',
+      message: 'Deberá autenticarse cada vez que utilice la aplicacion',
       inputs: [
         {
           name: 'contra',
-          placeholder: 'contraseña',
+          placeholder: 'Contraseña',
           type: 'password'
         },
         {
           name: 'contraConfirmada',
-          placeholder: 'confime su contraseña',
+          placeholder: 'Confime su contraseña',
           type: 'password'
         }
       ],
@@ -221,13 +207,13 @@ export class VerPerfilPropietarioPage {
 
   private habilitarmodoSeguro(password, confirmPassword, switchModoSeguro) {
     if (!password || !confirmPassword) {
-      this.util.toast('debe ingresar los 2 campos', 2000);
+      this.util.toast('Debe ingresar los 2 campos', 2000);
       this.confirmarHabilitarmodoSeguro(switchModoSeguro);
       return;
     }
 
     if (password !== confirmPassword) {
-      this.util.toast('las contraseñas no coinciden', 2000);
+      this.util.toast('Las contraseñas no coinciden', 2000);
       this.confirmarHabilitarmodoSeguro(switchModoSeguro);
       return;
     }

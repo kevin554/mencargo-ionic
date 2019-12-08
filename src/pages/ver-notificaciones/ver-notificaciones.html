@@ -23,13 +23,13 @@
         <ion-grid>
           <ion-row>
             <ion-col col-4 text-center>
-              <p [class.negrita]="notificacion.fecha_lectura == 'None'">
-                {{obtenerSoloFecha(notificacion.fecha_notificacion)}}
+              <p [class.negrita]="notificacion?.fecha_lectura == 'None'">
+                {{obtenerSoloFecha(notificacion?.fecha_notificacion)}}
               </p>
             </ion-col>
             <ion-col col-8>
-              <p [class.negrita]="notificacion.fecha_lectura == 'None'">
-                {{notificacion.mensaje}}
+              <p [class.negrita]="notificacion?.fecha_lectura == 'None'">
+                {{notificacion?.mensaje}}
               </p>
             </ion-col>
           </ion-row>
@@ -44,5 +44,11 @@
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
+
+  <!-- EMPTY STATE PARA CUANDO NO HAY NOTIFICACIONES -->
+  <empty-state *ngIf="notificaciones?.length === 0"
+      [img]="'assets/imgs/not-notification.png'"
+      [error]="'Parece que por ahora no tienes notificaciones'">
+  </empty-state>
 
 </ion-content>

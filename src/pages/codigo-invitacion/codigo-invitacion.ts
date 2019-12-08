@@ -13,8 +13,8 @@ export class CodigoInvitacionPage {
   private codificacion:string;
   private sePuedeCompartir:boolean;
   private codigoGenerado:any;
-  private nombreInvitado:string;
-  private nombreEvento:string;
+  public nombreInvitado:string;
+  public nombreEvento:string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       private socialSharing: SocialSharing) {

@@ -9,6 +9,6 @@ import { AppState } from '../../../app/app.global';
 })
 export class PopoverGestionarPage {
 
-  constructor(private global: AppState) { }
+  constructor(public global: AppState) { }
 
 }

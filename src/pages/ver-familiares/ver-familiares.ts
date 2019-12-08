@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams, PopoverController } from 'ionic-angular';
-
-import { FamiliaProvider, UtilServiceProvider } from '../../providers/index.services';
+import { AlertController, Loading, IonicPage, LoadingController, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
+import { FamiliaProvider, FamiliaresProvider, UtilServiceProvider } from '../../providers/index.services';
 
 @IonicPage()
 @Component({
@@ -10,15 +9,23 @@ import { FamiliaProvider, UtilServiceProvider } from '../../providers/index.serv
 })
 export class VerFamiliaresPage {
 
-  private noHayConexion:boolean;
+  public noHayConexion:boolean;
   private objVivienda:any;
-  private familiares:any[]; // la lista de familiares
+  private objUsuario:any;
+  private familiares:any[]; /* la lista de familiares */
   private cantidadQrDisponibles:any;
+  private cargarPeticion:Loading;
+  private peticionEnCurso:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       private _fp: FamiliaProvider, private alertCtrl: AlertController,
       public popoverCtrl: PopoverController, public util: UtilServiceProvider,
-      public loadingCtrl: LoadingController) {
+      public loadingCtrl: LoadingController, public platform: Platform,
+      public _familiaresProvider: FamiliaresProvider) {
+    if (navParams.get("usuario")) {
+      this.objUsuario = navParams.get("usuario");
+    }
+
     if (navParams.get("vivienda")) {
       this.objVivienda = navParams.get("vivienda");
     }
@@ -53,7 +60,7 @@ export class VerFamiliaresPage {
       soloLectura: false
     };
 
-    this.navCtrl.push('RegistrarFamiliarPage', parametros);
+    this.navCtrl.push("RegistrarFamiliarPage", parametros);
   }
 
   public hayQrDisponibles():boolean {
@@ -69,31 +76,30 @@ export class VerFamiliaresPage {
       soloLectura: false
     };
 
-    let popover = this.popoverCtrl.create('PopoverPage', parametros);
+    let popover = this.popoverCtrl.create("PopoverPage", parametros);
     popover.present({
       ev: evento
     });
   }
 
   private cargarFamiliares() {
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando lista de familiares',
-      enableBackdropDismiss: true
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Cargando lista de familiares.'
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
-    let peticion = this._fp.seleccionarPorIdVivienda(this.objVivienda.id);
+    let peticion = this._fp.seleccionarPorIdVivienda(
+      this.objVivienda.id,
+      this.objUsuario.id,
+      this.objUsuario.codigo
+    );
 
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
-
-      if (!this.familiares) {
-        this.noHayConexion = true;
-      }
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map( resp =>  {
+    this.peticionEnCurso = peticion.map( resp =>  {
       let datos = resp.json();
 
       if (datos.success) {
@@ -104,6 +110,8 @@ export class VerFamiliaresPage {
 
         for (let indice in datos) {
           let familiar = datos[indice];
+
+          this.agregarEnLocal(familiar);
           this.familiares.push(familiar);
           this.cantidadQrDisponibles.pop();
         }
@@ -112,24 +120,43 @@ export class VerFamiliaresPage {
     }).subscribe(
       success => {
         this.noHayConexion = false;
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
       },
       err => {
         this.noHayConexion = true;
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
       }
     );
   }
 
+  private agregarEnLocal(familiar) {
+    if (!this.platform.is("cordova")) return;
+
+    /* el objeto listo para insertar en local */
+    let obj = {
+      id: familiar.id,
+      nombre: familiar.nombre,
+      apellido: familiar.apellido,
+      genero: familiar.genero,
+      ci: familiar.ci,
+      celular: familiar.celular,
+      telefono: familiar.telefono,
+      correo: familiar.correo,
+      fkvivienda: familiar.fkvivienda,
+    }
+
+    this._familiaresProvider.insertar(obj);
+  }
+
   public confimarEliminar(indice) {
     let alert = this.alertCtrl.create({
-      title: '¿eliminar?',
+      title: '¿Eliminar?',
       buttons: [
         {
-          text: 'no'
+          text: 'No'
         },
         {
-          text: 'si',
+          text: 'Si',
           handler: () => { this.eliminar(indice) }
         }
       ]
@@ -141,20 +168,19 @@ export class VerFamiliaresPage {
   private eliminar(indice) {
     let familiar = this.familiares[indice];
 
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'eliminando',
-      enableBackdropDismiss: true
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Eliminando'
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
     let peticion = this._fp.eliminar(familiar.id);
 
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map( resp => {
+    this.peticionEnCurso = peticion.map( resp => {
       let datos = resp.json();
 
       if (datos.success) {
@@ -163,21 +189,21 @@ export class VerFamiliaresPage {
         if (this.familiares.length < 3) {
           this.cantidadQrDisponibles.push(0);
         }
-      } else {
-        let alert = this.alertCtrl.create({
-          title: 'hubo un error al eliminar el familiar',
-          buttons: [ {text: 'ok'} ]
-        });
 
-        alert.present();
+        if (this.platform.is("cordova")) {
+          this._familiaresProvider.eliminar(familiar.id);
+        }
+      } else {
+        this.util.alert("Hubo un error al eliminar el familiar.", "");
       }
+
     }).subscribe(
       success => {
-        cargarPeticion.dismiss()
+        this.cargarPeticion.dismiss()
       },
       err => {
-        cargarPeticion.dismiss();
-        this.util.toast('hubo un error al conectarse con el servidor');
+        this.cargarPeticion.dismiss();
+        this.util.toast('Hubo un error al conectarse con el servidor.');
       }
     );
   }

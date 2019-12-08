@@ -6,6 +6,10 @@
     color: white;
   }
 
+  #logo-no-transparente {
+    background: #303030;
+  }
+
   .onboard {
     border-color: #212121 !important;
   }
@@ -22,6 +26,10 @@
 
   ion-list {
     background-color: #100815;
+  }
+
+  ion-item-sliding {
+    background-color: #303030;
   }
 
   .time {
@@ -64,6 +72,10 @@
 
   .cabecera-visitas {
     color: #fff;
+  }
+
+  page-visitas .item-md p {
+    color: white;
   }
 
   .destinatario-qr {
@@ -123,5 +135,36 @@
     border-radius: 50%;
     background-color: #f26920;
   }
+
+  .error {
+    color: #ea6153 !important;
+    margin: 5px 0;
+    font-size: 12px;
+  }
+
+  .alert-head {
+    color: blue !important;
+  }
+
+  page-ver-contactos-evento {
+
+    ion-list {
+      background-color: #303030;
+    }
+
+  }
+
+  .cabecera-visitas {
+    background-color: #303030;
+  }
+
+  // color del sexo seleccionado
+  // ion-select div.select-text {
+  //   color: white;
+  // }
+
+  // div.select-text {
+  //   color: white;
+  // }
 
 }

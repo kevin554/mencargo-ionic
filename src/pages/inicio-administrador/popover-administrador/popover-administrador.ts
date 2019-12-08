@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { App, IonicPage, LoadingController, NavController, NavParams, ViewController } from 'ionic-angular';
+import { App, Events, IonicPage, LoadingController, NavController, NavParams, Platform, ViewController } from 'ionic-angular';
 import { AppState } from '../../../app/app.global';
-import { AdministradorProvider } from '../../../providers/index.services';
+import { AdministradorProvider, IngresosProvider, ViviendaDao } from '../../../providers/index.services';
 import { Firebase } from '@ionic-native/firebase';
 
 @IonicPage()
@@ -11,14 +11,16 @@ import { Firebase } from '@ionic-native/firebase';
 })
 export class PopoverAdministradorPage {
 
-  private objRol;
+  public objRol;
   private objCondominio;
   private objUsuario;
 
   constructor(public viewCtrl: ViewController, public app: App,
       public navParams: NavParams, private _ap: AdministradorProvider,
       public navCtrl: NavController, private firebase: Firebase,
-      public loadingCtrl: LoadingController, public global: AppState) {
+      public loadingCtrl: LoadingController, public global: AppState,
+      private viviendaDao: ViviendaDao, public events: Events,
+      public platform: Platform, private ingresosProvider: IngresosProvider) {
     if (navParams.get("rol")) {
       this.objRol = navParams.get("rol");
     }
@@ -34,21 +36,39 @@ export class PopoverAdministradorPage {
 
   public gestionar() {
     let parametros = {
-      condominio: this.objCondominio
+      condominio: this.objCondominio,
+      // navCtrl: this.navCtrl
+    }
+// this.viewCtrl.dismiss(); // para cerrar el menu
+    // this.events.publish("gestionarPermisos");
+    // this.navParams.get("gestionarPermisos")();
+    let navCtrlPadre = this.app.getActiveNavs()[0];
+    navCtrlPadre.push("GestionarPage", parametros);
+    // this.navCtrl.push("GestionarPage", parametros);
+
+    this.viewCtrl.dismiss(); // para cerrar el menu
+  }
+
+  public verReportes() {
+    let parametros = {
+      condominio: this.objCondominio,
     }
 
     let navCtrlPadre = this.app.getActiveNavs()[0];
-    navCtrlPadre.push('GestionarPage', parametros);
+    navCtrlPadre.push("ReportesPage", parametros);
 
     this.viewCtrl.dismiss(); // para cerrar el menu
   }
 
   public cerrarSesion() {
     this._ap.cerrarSesion();
+    // this.viviendaDao.eliminarTodas();
+    if (this.platform.is("cordova")) this.viviendaDao.eliminarTabla();
+    if (this.platform.is("cordova")) this.ingresosProvider.eliminarTabla();
 
     /* se va a mostrar una espera mientras se realiza la peticion */
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'cerrando la sesion',
+      content: 'Cerrando la sesión.',
       enableBackdropDismiss: true
     });
 
@@ -62,7 +82,7 @@ export class PopoverAdministradorPage {
       }
     )
 
-    let peticion = this._ap.actualiazarToken(
+    let peticion = this._ap.actualizarToken(
       this.objUsuario.id,
       this.objUsuario.codigo,
       "Sin Token"
@@ -75,13 +95,7 @@ export class PopoverAdministradorPage {
     let peticionEnCurso = peticion.map( resp => {
       let datos = resp.json();
 
-      console.log(`la respuesta del servidor fue ${JSON.stringify(datos)}`)
-
-      if (datos.success) {
-
-      } else {
-
-      }
+      if (datos.success) { } else { }
 
     }).subscribe(
       success => {
@@ -95,7 +109,7 @@ export class PopoverAdministradorPage {
     this.viewCtrl.dismiss(); // para cerrar el menu
 
     let navCtrlPadre = this.app.getActiveNavs()[0];
-    navCtrlPadre.setRoot('InicioPage');
+    navCtrlPadre.setRoot("InicioPage");
   }
 
 }

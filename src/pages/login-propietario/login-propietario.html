@@ -1,0 +1,55 @@
+<ion-header>
+
+    <ion-navbar color="primary">
+      <ion-title>Iniciar sesión</ion-title>
+    </ion-navbar>
+  
+  </ion-header>
+  
+  
+  <ion-content padding>
+  
+    <img src="assets/imgs/portada_mencargo.png" alt="logo y marca"
+        class="centrar-hor" margin-vertical padding-vertical>
+  
+    <form [formGroup]="formLoginAdmin" (ngSubmit)="validarFormulario()">
+      <ion-item>
+        <ion-label floating>Usuario</ion-label>
+        <ion-input type="text" formControlName="username">
+        </ion-input>
+      </ion-item>
+      <p [class.error]="formLoginAdmin.controls.username.dirty">
+       {{error_username}}
+      </p>
+  
+      <ion-item>
+        <ion-label floating>Contraseña</ion-label>
+        <ion-input type="password" formControlName="password">
+        </ion-input>
+      </ion-item>
+      <p [class.error]="formLoginAdmin.controls.password.dirty">
+        {{error_password}}
+      </p>
+  
+      <!-- BOTON INVISIBLE PARA VALIDAR EL FORMULARIO CON LA TECLA ENTER -->
+      <button (tap)="validarFormulario()" style="background: rgba(0, 0, 0, 0)">
+      </button>
+
+      <ion-row justify-content-center>
+        <p style="padding: 20px">La administracion de su condominio debe proveerle un usuario y contraseña para su primer ingreso al sistema de MENCARGO</p>
+      </ion-row>
+    </form>
+  
+    <swal #alertaErrorInicioSesion title text type></swal>
+  
+  </ion-content>
+  
+  
+  <ion-footer text-center no-border>
+  
+    <button ion-button margin class="pop-in" (tap)="validarFormulario()">
+      Ingresar
+    </button>
+  
+  </ion-footer>
+  

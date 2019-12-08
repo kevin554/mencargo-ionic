@@ -1,3 +1,23 @@
 page-viviendas {
 
+    .item {
+      padding-left: 0px;
+    }
+    
+    .item-inner {
+      padding-left: 8px;
+    }
+
+    @media (min-width: 768px) {
+
+      h3 {
+        font-size: 36px;
+      }
+
+      .badge {
+        font-size: 24px;
+      }
+
+    }
+
 }

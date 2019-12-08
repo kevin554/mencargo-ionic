@@ -15,11 +15,10 @@
 <ion-content>
 
   <ion-list no-lines>
-    <ion-item *ngFor="let privilegio of listaPrivilegios"
-        style="border-bottom: 1px solid #dedede; padding-left: 0">
+    <ion-item *ngFor="let privilegio of listaPrivilegios">
       <ion-label>{{privilegio.boton}}</ion-label>
       <ion-checkbox [checked]="privilegio.estado" item-right
-          (click)="actualizarPrivilegio(privilegio)">
+          (tap)="actualizarPrivilegio(privilegio)">
       </ion-checkbox>
     </ion-item>
   </ion-list>

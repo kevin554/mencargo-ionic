@@ -7,7 +7,7 @@ import { RevisarListaInvitadosPage } from './revisar-lista-invitados';
     RevisarListaInvitadosPage,
   ],
   imports: [
-    IonicPageModule.forChild(RevisarListaInvitadosPage),
+    IonicPageModule.forChild(RevisarListaInvitadosPage)
   ],
 })
 export class RevisarListaInvitadosPageModule {}

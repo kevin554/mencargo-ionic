@@ -9,7 +9,7 @@
 
 <ion-content padding>
 
-  <h1>{{objVisita?.invitado_nombre}}</h1>
+  <h1>{{objVisita?.invitado_nombre}} {{objVisita?.invitado_apellido}}</h1>
   <h2>{{objVisita?.invitado_ci == 0 ? 'Sin carnet registrado' : objVisita?.invitado_ci}}</h2>
   <hr>
 
@@ -17,10 +17,6 @@
     <h2>Casa</h2>
     <p>{{objVisita.vivienda}}</p>
   </ion-item>
-  <!-- <ion-item>
-    <h2>Hora de ingreso</h2>
-    <p>{{objVisita.hora_ingreso}}</p>
-  </ion-item> -->
   <ion-item>
     <h2>Fecha de ingreso</h2>
     <p>{{objVisita.hora_ingreso}}</p>

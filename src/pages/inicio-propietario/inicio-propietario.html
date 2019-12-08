@@ -16,8 +16,8 @@
 
 <ion-content>
 
-  <ion-fab >
-    <img src="assets/imgs/portada_mencargo.png" style="width: 50%">
+  <ion-fab id="logo-no-transparente">
+    <img src="assets/imgs/portada_mencargo_claro.png" style="width: 50%">
   </ion-fab>
 
   <centrar-componente>
@@ -37,64 +37,71 @@
           </div>
         </ion-col>
         <!-- ENVIAR INVITACION -->
-        <ion-col col-5 class="centrar-hor" (tap)="tap('Enviar Invitacion')">
+        <ion-col  col-5 class="centrar-hor" (tap)="tap('Enviar Invitacion')">
           <div>
             <img [src]="fueTocado('Enviar Invitacion') ?
                 'assets/imgs/round-sent-mail-orange.png' :
                 'assets/imgs/round-sent-mail-blue.png'">
-            <p>Enviar invitacion</p>
+            <p>Enviar invitación</p>
           </div>
         </ion-col>
         <!-- CREAR EVENTO -->
-        <ion-col col-5 class="centrar-hor" (tap)="tap('Crear Evento')">
+        <!--<ion-col col-5 class="centrar-hor" (tap)="tap('Crear Evento')"-->
+            <!--*ngIf="!hayEvento">-->
+          <!--<div>-->
+            <!--<img [src]="fueTocado('Crear Evento') ?-->
+                <!--'assets/imgs/round-balloon-orange.png' :-->
+                <!--'assets/imgs/round-balloon-blue.png'">-->
+            <!--<p>Crear evento</p>-->
+          <!--</div>-->
+        <!--</ion-col>-->
+        <!-- LISTA DE INVITADOS -->
+        <!--<ion-col  col-5 class="centrar-hor" (tap)="tap('Lista de Invitados')"-->
+            <!--*ngIf="hayEvento">-->
+          <!--<div>-->
+            <!--<img [src]="fueTocado('Lista de Invitados') ?-->
+                <!--'assets/imgs/round-verification-orange.png' :-->
+                <!--'assets/imgs/round-verification-blue.png'">-->
+            <!--<p>Lista de invitados</p>-->
+          <!--</div>-->
+        <!--</ion-col>-->
+        <!-- GRUPOS DE AMIGOS -->
+        <!-- <ion-col col-5 class="centrar-hor" (tap)="tap('Grupos')">
           <div>
-            <img [src]="fueTocado('Crear Evento') ?
+            <img [src]="fueTocado('Grupos') ?
                 'assets/imgs/round-group-orange.png' :
                 'assets/imgs/round-group-blue.png'">
-            <p>Crear evento</p>
+            <p>Grupos</p>
           </div>
         </ion-col>
-        <!-- NOTIFICACIONES
-          ng-click="animarBotonNotificacion=!animarBotonNotificacion"
-          [ngClass]="{'ta-da': animarBotonNotificacion, '': !animarBotonNotificacion}"
-
-          [ngClass]="{'ta-da' : animarBotonNotificacion}"
-          [ngClass]="{'' : !animarBotonNotificacion}"
-
-
-
-        [ngClass]="{'ta-da': animarBotonNotificacion, 'bounce': !animarBotonNotificacion}"
-      [ngClass]="{'ta-da': animarBotonNotificacion, 'quitar-animacion': !animarBotonNotificacion}"
-    [class.ta-da]="animarBotonNotificacion"
-  [class.ta-da]="animarBotonNotificacion" [class.ta-da]="!animarBotonNotificacion"
-[ngClass]="{'ta-da': animarBotonNotificacion, 'ta-da-again': !animarBotonNotificacion}"
--->
-        <ion-col col-5 class="centrar-hor" (tap)="tap('Notificaciones', animar)" #animar
-            [class.ta-da]="animarBotonNotificacion" [class.swing]="!animarBotonNotificacionOtraVez"
-            >
-          <div>
-              <ion-badge class="contador-notificaciones" color="secundario"
-                  *ngIf="contadorNotificaciones > 0">
-                {{contadorNotificaciones}}
-              </ion-badge>
-              <img [src]="fueTocado('Notificaciones') ?
-                  'assets/imgs/round-notification-orange.png' :
-                  'assets/imgs/round-notification-blue.png'">
-              <p>Notificaciones</p>
-          </div>
-        </ion-col>
+        <!-- NOTIFICACIONES -->
+        <!--<ion-col col-5 class="centrar-hor" (tap)="tap('Notificaciones')">-->
+          <!--<div>-->
+            <!--<div [class.ta-da]="animacionBotonNotificacion == ANIMACION_TA_DA"-->
+                <!--[class.swing]="animacionBotonNotificacion == ANIMACION_SWING">-->
+              <!--<ion-badge class="contador-notificaciones" color="danger"-->
+                  <!--*ngIf="hayNotificacionSinLeer"></ion-badge>-->
+              <!--<img [src]="fueTocado('Notificaciones') ?-->
+                  <!--'assets/imgs/round-notification-orange.png' :-->
+                  <!--'assets/imgs/round-notification-blue.png'">-->
+            <!--</div>-->
+            <!--<p>Notificaciones</p>-->
+          <!--</div>-->
+        <!--</ion-col>-->
         <!-- SOPORTE TECNICO -->
         <ion-col col-5 class="centrar-hor" (tap)="tap('Soporte Tecnico')">
           <div>
             <img [src]="fueTocado('Soporte Tecnico') ?
                 'assets/imgs/round-support-orange.png' :
                 'assets/imgs/round-support-blue.png'">
-            <p>Soporte tecnico</p>
+            <p>Soporte técnico</p>
           </div>
         </ion-col>
       </ion-row>
     </ion-grid>
 
   </centrar-componente>
+
+  <swal #alertaIngreso title="" type=""></swal>
 
 </ion-content>

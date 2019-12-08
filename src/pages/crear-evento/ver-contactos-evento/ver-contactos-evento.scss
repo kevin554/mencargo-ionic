@@ -1,7 +1,24 @@
 page-ver-contactos-evento {
 
   ion-item {
-    
+
+  }
+
+  .item ion-icon[item-end] {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  button.ion-button {
+    width: 100%;
+  }
+
+  .button-inner {
+    white-space: normal;
+  }
+
+  ion-grid.grid {
+    padding: 0;
   }
 
 }

@@ -18,13 +18,13 @@ page-inicio-propietario {
     height: 15%;
   }
 
-  .contador-notificaciones {
+  ion-badge {
+    display: block !important;
     position: absolute;
     right: 10%;
-  }
-
-  .quitar-animacion {
-    -webkit-animation: initial !important;
+    height: 20px;
+    width: 20px;
+    border-radius: 50% !important;
   }
 
 }

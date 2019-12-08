@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
+import { AlertController, IonicPage, Loading, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
 import { InvitadoProvider, MovimientoProvider, UtilServiceProvider, InvitadoDao } from '../../../providers/index.services';
 
 @IonicPage()
@@ -9,11 +9,10 @@ import { InvitadoProvider, MovimientoProvider, UtilServiceProvider, InvitadoDao 
 })
 export class AmigosPage {
 
-  private idFamiliar:any;
   private objFamiliar:any;
   private amigos:any[];
-
-  private noHayConexion:boolean;
+  private cargarPeticion:Loading;
+  private peticionEnCurso:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       public alertCtrl: AlertController, public loadingCtrl: LoadingController,
@@ -22,8 +21,15 @@ export class AmigosPage {
       private platform: Platform) {
     if (navParams.get("familiar")) {
       this.objFamiliar = navParams.get("familiar");
-      this.idFamiliar = this.objFamiliar.id;
       this.cargarAmigos();
+    }
+  }
+
+  /* cuando se presione la tecla atrás, es necesario finalizar con cualquier
+    peticion que se esté ejecutando */
+  ionViewWillLeave() {
+    if (this.cargarPeticion) {
+      this.cargarPeticion.dismiss();
     }
   }
 
@@ -43,19 +49,27 @@ export class AmigosPage {
 
   public enviarInvitacion(amigo) {
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'generando invitacion',
+      content: 'Generando invitación',
       enableBackdropDismiss: true
     });
 
     cargarPeticion.present();
 
-    // let horaIngreso = this.util.getFechaActual();
-
-    let peticion = this._mp.insertarInvitacionDesdeFamiliar(amigo.nombre, amigo.apellido,
+    let peticion = this._mp.insertarInvitacionDesdeFamiliar(amigo.nombre,
+      amigo.apellido,
       "24",
-      "horas", this.util.getFechaActual().substring(0, 10) + " 00:00:00",
-      amigo.ci, amigo.expedicion, amigo.celular, "" /* placa */,
-      this.idFamiliar, amigo.id, "", "", this.util.getFechaActual(), this.objFamiliar.codigo);
+      "horas",
+      this.util.getFechaActual().substring(0, 10) + " 00:00:00",
+      amigo.ci,
+      amigo.expedicion,
+      amigo.celular,
+      "" /* placa */,
+      this.objFamiliar.id,
+      amigo.id,
+      "",
+      "Familiar",
+      this.util.getFechaActual(),
+      this.objFamiliar.codigo);
 
     /* si se cancela antes de que se complete la peticion */
     cargarPeticion.onDidDismiss( () => {
@@ -76,6 +90,21 @@ export class AmigosPage {
         }
 
         this.navCtrl.push('CodigoInvitacionPage', parametros);
+
+        if (this.platform.is("cordova")) {
+          let obj = {
+            id: datos.idvisita,
+            nombre: amigo.nombre,
+            apellido: amigo.apellido,
+            ci: amigo.ci,
+            expedicion: amigo.expedicion,
+            celular: amigo.celular,
+            fkfamilia: this.objFamiliar.id,
+            fkcondominio: this.objFamiliar.condominio
+          }
+
+          this.agregarInvitacionLocal(obj);
+        }
       }
 
     }).subscribe(
@@ -90,7 +119,7 @@ export class AmigosPage {
 
   public importarAmigos() {
     let parametros = {
-      idfamiliar: this.idFamiliar
+      familiar: this.objFamiliar
     }
 
     this.navCtrl.push('ImportarAmigosPage', parametros);
@@ -103,7 +132,6 @@ export class AmigosPage {
 
   public agregarAmigo() {
     let parametros = {
-      idFamiliar: this.idFamiliar,
       amigos: this.amigos,
       soloRegistrarAmigo: true,
       familiar: this.objFamiliar
@@ -112,24 +140,32 @@ export class AmigosPage {
     this.navCtrl.push('RegistrarInvitacionPage', parametros);
   }
 
+  public verGrupos() {
+    let parametros = {
+      familiar: this.objFamiliar
+    }
+
+    this.navCtrl.push('VerGruposPage', parametros);
+  }
+
   private cargarAmigos() {
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'cargando lista de amigos',
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Cargando lista de amigos',
       enableBackdropDismiss: true
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
     let peticion = this._ip.seleccionarAmigos(
-      this.idFamiliar,
+      this.objFamiliar.id,
       this.objFamiliar.codigo
     );
 
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map( resp => {
+    this.peticionEnCurso = peticion.map( resp => {
       let datos = resp.json();
 
       if (datos.success) {
@@ -140,10 +176,9 @@ export class AmigosPage {
           let amigo = datos[indice];
           this.amigos.push(amigo);
 
-          // if (this.platform.is("cordova")) {
-          //   this.agregarInvitacionLocal(amigo);
-          // }
-
+          if (this.platform.is("cordova")) {
+            this.agregarInvitacionLocal(amigo);
+          }
         }
 
         this.util.ordenarPorMultiplesCampos(this.amigos, "nombre", "apellido");
@@ -159,27 +194,25 @@ export class AmigosPage {
 
     }).subscribe(
       success => {
-        cargarPeticion.dismiss();
-        this.noHayConexion = false;
+        this.cargarPeticion.dismiss();
       },
       err => {
-        cargarPeticion.dismiss();
-        this.noHayConexion = true;
-        // this.cargarAmigosLocal();
+        this.cargarPeticion.dismiss();
+        this.cargarAmigosLocal();
       }
     );
   }
 
   public confirmarEliminarAmigo(indice, slidingItem) {
     let alert = this.alertCtrl.create({
-      title: '¿eliminar amigo?',
+      title: '¿Eliminar amigo?',
       buttons: [
         {
-          text: 'no',
+          text: 'No',
           handler: () => { slidingItem.close() }
         },
         {
-          text: 'si',
+          text: 'Si',
           handler: () => { this.eliminarAmigo(indice) }
         }
       ]
@@ -191,12 +224,12 @@ export class AmigosPage {
   private eliminarAmigo(indice) {
     let amigo = this.amigos[indice];
 
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'eliminando amigo',
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Eliminando amigo',
       enableBackdropDismiss: true
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
     let peticion = this._ip.eliminar(
       amigo.id,
@@ -204,23 +237,23 @@ export class AmigosPage {
       this.objFamiliar.codigo
     );
 
-    // si cancela antes de que se complete la peticion
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
+    /* si cancela antes de que se complete la peticion */
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map( resp => {
+    this.peticionEnCurso = peticion.map( resp => {
       let datos = resp.json();
 
       if (datos.success) {
         this.amigos.splice(indice, 1);
 
-        // if (this.platform.is("cordova")) {
-        //   this.invitadoDao.eliminar(amigo.id);
-        // }
+        if (this.platform.is("cordova")) {
+          this.invitadoDao.eliminar(amigo.id);
+        }
       } else {
         let alert = this.alertCtrl.create({
-          title: 'hubo un error al eliminar tu amigo',
+          title: 'Hubo un error al eliminar tu amigo',
           buttons: [ {text: 'ok'} ]
         });
 
@@ -228,55 +261,50 @@ export class AmigosPage {
       }
     }).subscribe(
       success => {
-        cargarPeticion.dismiss()
+        this.cargarPeticion.dismiss()
       },
       err => {
-        cargarPeticion.dismiss();
-        this.util.toast('hubo un error al conectarse con el servidor');
+        this.cargarPeticion.dismiss();
+        this.util.toast('Hubo un error al conectarse con el servidor.');
       }
     );
   }
 
-  // private agregarInvitacionLocal(invitacion) {
-  //   /* el objeto listo para insertar en local */
-  //   let obj = {
-  //     id: invitacion.id,
-  //     nombre: invitacion.nombre,
-  //     apellido: invitacion.apellido,
-  //     ci: invitacion.ci,
-  //     expedicion: invitacion.expedicion,
-  //     celular: invitacion.celular,
-  //     fkfamilia: invitacion.fkfamilia,
-  //     fkcondominio: invitacion.fkcondominio
-  //   }
-  //
-  //   this.invitadoDao.insertar(obj);
-  // }
+  private agregarInvitacionLocal(invitacion) {
+    /* el objeto listo para insertar en local */
+    let obj = {
+      id: invitacion.id,
+      nombre: invitacion.nombre,
+      apellido: invitacion.apellido,
+      ci: invitacion.ci,
+      expedicion: invitacion.expedicion,
+      celular: invitacion.celular,
+      fkfamilia: invitacion.fkfamilia,
+      fkcondominio: invitacion.fkcondominio
+    }
 
-  // private cargarAmigosLocal() {
-  //   if (this.platform.is("cordova")) {
-  //     this.invitadoDao.getDatabaseState().subscribe( listo => {
-  //       if (listo) {
-  //         this.invitadoDao.seleccionarTodas().then( (datos)  => {
-  //           if (datos.length == 0) {
-  //             this.noHayConexion = true;
-  //             return;
-  //           }
-  //
-  //           this.amigos = [];
-  //
-  //           for (let i in datos) {
-  //             let amigo = datos[i];
-  //             this.amigos.push(amigo);
-  //           }
-  //
-  //           /* voy a ordenar las notificaciones */
-  //           this.amigos = this.util.ordenar(this.amigos, "nombre");
-  //         }); /* fin de familiarDao.seleccionarTodas() */
-  //       }
-  //
-  //     }); /* fin del getDatabaseState */
-  //   }
-  // }
+    this.invitadoDao.insertar(obj);
+  }
+
+  private cargarAmigosLocal() {
+    if (this.platform.is("cordova")) {
+      this.invitadoDao.getDatabaseState().subscribe( listo => {
+        if (listo) {
+          this.invitadoDao.seleccionarTodas().then( (datos)  => {
+            this.amigos = [];
+
+            for (let i in datos) {
+              let amigo = datos[i];
+              this.amigos.push(amigo);
+            }
+
+            /* voy a ordenar los amigos */
+            this.util.ordenarPorMultiplesCampos(this.amigos, "nombre", "apellido");
+          }); /* fin de familiarDao.seleccionarTodas() */
+        }
+
+      }); /* fin del getDatabaseState */
+    }
+  }
 
 }

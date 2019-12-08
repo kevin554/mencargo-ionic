@@ -54,7 +54,7 @@ export class InvitadoProvider {
       "expedicion": "${expedicion}",
       "celular": ${celular},
       "fkfamilia": ${idFamiliar},
-      "adicionadopor": "${adicionadoPor}",
+      "adicionadopor": "Familiar",
       "fechaadicion": "${fechaAdicion}",
       "idfamiliar": ${idFamiliar},
       "codigo": "${codigo}"
@@ -171,36 +171,46 @@ export class InvitadoProvider {
   *
   * el formato de 'fechaadicion' debe ser DD/MM/YYYY HH:MM:SS
   */
-  public insertarAmigos(...amigos:any[]) {
+  public insertarAmigos(idFamiliar, codigo, ...amigos:any[]) {
     amigos = amigos[0];
 
     let link = URL + "/api/v1/insert_invitados";
     let fechaAdicion = this.util.getFechaActual();
 
-    let objStr = `[`;
+    let otroObjStr = `{
+      "adicionadopor": "Familiar",
+      "fechaadicion": "${fechaAdicion}",
+      "idfamiliar": ${idFamiliar},
+      "codigo": "${codigo}",
+      `;
 
     let primero = true;
-    for (let amigo of amigos) {
+
+    otroObjStr += `"invitados": [`;
+
+    for (let indice in amigos) {
+      let amigo = amigos[indice];
+
       if (!primero) {
-        objStr += `, `;
+        otroObjStr += ", "
       }
 
-      objStr += `{
-        "id": ${amigo.id},
+      otroObjStr += `{
         "nombre": "${amigo.nombre}",
+        "apellido": "${amigo.apellido}",
         "ci": ${amigo.ci},
-        "celular": ${amigo.celular},
-        "fkfamilia": ${amigo.fkfamilia},
-        "adicionadopor": "",
-        "fechaadicion": "${fechaAdicion}"
-      }`
+        "expedicion": "SC",
+        "celular": ${amigo.celular}
+      }`;
 
       primero = false;
     }
 
-    objStr += `]`;
+    otroObjStr += "]"; /* fin de los invitados */
 
-    return this.http.post(link, objStr);
+    otroObjStr += "}"; /* fin de todo */
+
+    return this.http.post(link, otroObjStr);
   }
 
 }

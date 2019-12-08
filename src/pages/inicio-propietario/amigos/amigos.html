@@ -2,24 +2,24 @@
 
   <ion-navbar color="primary">
     <ion-title>Amigos</ion-title>
-    <!-- <ion-buttons start>
-      <button ion-button (click)="importarAmigos()">
-        Importar amigos
-      </button>
-    </ion-buttons> -->
+    <!--<ion-buttons end>-->
+      <!--<button ion-button (click)="importarAmigos()">-->
+        <!--Importar-->
+      <!--</button>-->
+    <!--</ion-buttons>-->
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content>
+<ion-content esconder-boton-flotante>
 
   <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
   <ion-refresher (ionRefresh)="gestoActualizar($event)">
     <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
     <ion-refresher-content
         pullingIcon="arrow-dropdown"
-        pullingText="deslice para actualizar">
+        pullingText="Deslice para actualizar">
     </ion-refresher-content>
   </ion-refresher>
 
@@ -34,7 +34,7 @@
       </ion-item>
 
       <!-- DESLIZAR PARA ELIMINAR -->
-      <ion-item-options side="right" *ngIf="!hayQueInvitar">
+      <ion-item-options side="right">
         <button ion-button icon-only color="danger"
             (click)="confirmarEliminarAmigo(i, slidingItem)">
           <ion-icon name="trash"></ion-icon>
@@ -42,25 +42,29 @@
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
+  <!--SIMULO UN ELEMENTO MÁS, PARA QUE EL BOTON FLOTANTE NO OBSTRUYA LA VISTA-->
+  <ion-list no-lines>
+    <ion-item></ion-item>
+  </ion-list>
 
   <!-- BOTON PARA AGREGAR AMIGOS -->
   <ion-fab bottom right margin-vertical>
-    <button ion-fab (click)="agregarAmigo()">
+    <button ion-fab (click)="agregarAmigo()" color="secundario">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
 
-  <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
-  <empty-state *ngIf="noHayConexion && !amigos"
-      [img]="'assets/imgs/cloud-off.png'"
-      [error]="'hubo un error al establecer la conexion'"
-      [posibleSolucion]="'deslizá para actualizar'">
-  </empty-state>
+  <!--&lt;!&ndash; BOTON PARA VER LOS GRUPOS &ndash;&gt;-->
+  <!--<ion-fab bottom left margin-vertical>-->
+    <!--<button ion-fab (tap)="verGrupos()">-->
+      <!--<ion-icon name="people"></ion-icon>-->
+    <!--</button>-->
+  <!--</ion-fab>-->
 
   <!-- EMPTY STATE PARA CUANDO LA LISTA DE AMIGOS ESTÁ VACIA -->
   <empty-state *ngIf="amigos?.length === 0"
       [img]="'assets/imgs/group-of-men.png'"
-      [error]="'Parece que no tenes ningun amigo registrado'"
+      [error]="'Parece que no tenes ningún amigo registrado'"
       [posibleSolucion]="'Agrega uno'">
   </empty-state>
 

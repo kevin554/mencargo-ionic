@@ -23,7 +23,6 @@
       <ion-badge>{{objVivienda?.codificacion}}</ion-badge>
     </div>
   </div>
-
   <form [formGroup]="formuRegFam" padding>
     <!-- CAMPO DEL NOMBRE -->
     <ion-item>
@@ -38,7 +37,6 @@
         [class.error]="formuRegFam.controls.nombre.dirty">
      {{error_nombre}}
     </p>
-
     <!-- CAMPO DEL APELLIDO -->
     <ion-item>
       <ion-icon item-start></ion-icon>
@@ -52,7 +50,6 @@
         [class.error]="formuRegFam.controls.apellido.dirty">
      {{error_apellido}}
     </p>
-
     <!-- CAMPO DEL SEXO -->
     <ion-item padding-top>
       <ion-icon item-start [name]="formuRegFam.controls.sexo.value ?
@@ -62,12 +59,13 @@
           : 'dark'">
       </ion-icon>
       <ion-label>Sexo:</ion-label>
-      <ion-select formControlName="sexo" cancelText="cancelar" class="tema-oscuro">
+      <!--  class="tema-oscuro" -->
+      <ion-select formControlName="sexo" cancelText="cancelar"
+          class="getModoNocturno()">
         <ion-option value="M">Masculino</ion-option>
         <ion-option value="F">Femenino</ion-option>
       </ion-select>
     </ion-item>
-
     <!-- CAMPO DEL CELULAR -->
     <ion-item>
       <ion-icon name="call" item-start color="verde"></ion-icon>
@@ -81,26 +79,11 @@
         [class.error]="formuRegFam.controls.celular.dirty">
      {{error_celular}}
     </p>
-
-    <!-- CAMPO DEL CELULAR -->
-    <!-- <ion-item>
-      <ion-icon name="call" item-start color="verde"></ion-icon>
-      <ion-label floating>Telefono 2</ion-label>
-      <ion-input type="number" formControlName="telefono"
-          [class.invalid]="!formuRegFam.controls.telefono.valid &&
-          (formuRegFam.controls.telefono.dirty || intentoIngresar)">
-      </ion-input>
-    </ion-item>
-    <p *ngIf="formuRegFam.controls.telefono.dirty && intentoIngresar"
-        [class.error]="formuRegFam.controls.telefono.dirty">
-     {{error_telefono}}
-    </p> -->
-
     <!-- CAMPO DEL CORREO -->
     <ion-item>
       <ion-icon name="mail" item-start color="rojo"></ion-icon>
       <ion-label floating>Correo</ion-label>
-      <ion-input type="text" formControlName="correo"
+      <ion-input type="email" formControlName="correo"
           (ngModelChange)="aMinuscula($event)"
           [class.invalid]="!formuRegFam.controls.correo.valid &&
           (formuRegFam.controls.correo.dirty || intentoIngresar)">
@@ -110,7 +93,6 @@
         [class.error]="formuRegFam.controls.correo.dirty">
       {{error_correo}}
     </p>
-
     <!-- CAMPO DEL CI  -->
     <ion-item>
       <ion-icon name="create" item-start color="naranja"></ion-icon>

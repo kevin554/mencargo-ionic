@@ -42,11 +42,13 @@ export class ViviendaProvider {
   * (returns) una lista con las viviendas de un condominio con el sgte formato:
   * id, codificacion, familia, direccion, telefono, numero
   */
-  public seleccionarTodasPorIdCondominio(idCondominio) {
+  public seleccionarTodasPorIdCondominio(idCondominio, idUsuario, codigo) {
     let link = URL + "/api/v1/get_viviendas";
 
     let objStr = `{
-      "idcondominio": ${idCondominio}
+      "idcondominio": ${idCondominio},
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);

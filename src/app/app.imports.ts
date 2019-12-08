@@ -6,7 +6,8 @@ import { AppState } from './app.global';
 import { ViviendaProvider, FamiliaProvider, InvitadoProvider,
   MovimientoProvider, AdministradorProvider,
   UsuarioProvider, UtilServiceProvider, Sql, FamiliarDao,
-  ViviendaDao, InvitadoDao } from '../providers/index.services';
+  ViviendaDao, InvitadoDao, EventoProvider, GrupoProvider, NotificacionDao,
+  IngresosProvider, ContactosProvider, FamiliaresProvider } from '../providers/index.services';
 
 
 /* IONIC NATIVE PROVIDERS */
@@ -47,11 +48,6 @@ npm install --save @ionic-native/firebase
 */
 import { Firebase } from '@ionic-native/firebase';
 /*
-ionic cordova plugin add cordova-plugin-local-notification
-npm install --save @ionic-native/local-notifications
-*/
-import { LocalNotifications } from '@ionic-native/local-notifications';
-/*
 ionic cordova plugin add cordova-plugin-x-socialsharing
 npm install --save @ionic-native/social-sharing
 */
@@ -77,10 +73,10 @@ npm install --save @ionic-native/header-color
 */
 import { HeaderColor } from '@ionic-native/header-color';
 /*
-ionic cordova plugin add cordova-plugin-badge
-npm install --save @ionic-native/badge
+ionic cordova plugin add cordova-plugin-network-information
+npm install --save @ionic-native/network
 */
-import { Badge } from '@ionic-native/badge';
+import { Network } from '@ionic-native/network';
 
 
 /* modules */
@@ -108,6 +104,12 @@ export const PROVIDERS = [
   FamiliarDao,
   ViviendaDao,
   InvitadoDao,
+  EventoProvider,
+  GrupoProvider,
+  NotificacionDao,
+  IngresosProvider,
+  ContactosProvider,
+  FamiliaresProvider, 
 
 
   // ionic native specific providers
@@ -117,12 +119,11 @@ export const PROVIDERS = [
   AndroidPermissions,
   SocialSharing,
   File,
-  LocalNotifications,
   Firebase,
   SQLite,
   Contacts,
   CallNumber,
   AndroidFingerprintAuth,
   HeaderColor,
-  Badge
+  Network
 ];

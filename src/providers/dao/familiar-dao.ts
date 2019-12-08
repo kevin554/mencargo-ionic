@@ -1,4 +1,3 @@
-// import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
@@ -20,7 +19,6 @@ export class FamiliarDao {
           location: 'default'
         }).then( (db: SQLiteObject) => {
           this.database = db;
-          console.log('creando tabla notificaciones');
           let sentencia = `
             create table if not exists notificaciones(
               id integer primary key,
@@ -31,12 +29,12 @@ export class FamiliarDao {
               fecha text,
               lectura text
             )`;
-          this.database.executeSql(sentencia, {})
-              .then( () => {
-                this.databaseReady.next(true)
-              }).catch();
+          this.database.executeSql(sentencia, {}).then(
+            () => {
+              this.databaseReady.next(true)
+            }).catch(
 
-          console.log('tabla notificaciones creadas')
+            );
         });
       });
     }// fin if cordova
@@ -54,23 +52,19 @@ export class FamiliarDao {
     let parametros = [notificacion.id, notificacion.titulo, notificacion.mensaje,
       notificacion.fkfamilia, notificacion.fkcondominio, notificacion.fecha,
       notificacion.lectura];
-    console.log('parametros' + JSON.stringify(parametros))
 
     return this.database.executeSql(sentencia, parametros).then( datos => {
       return datos;
     }, err => {
-      console.log('Error: ', err);
       return err;
     })
   }
 
   seleccionarTodas() {
     return this.database.executeSql(`select * from notificaciones`, []).then( (datos) => {
-      console.log('select from notificaciones')
       let notificaciones = [];
 
       if (datos.rows.length > 0) {
-        console.log('hay notificaciones en local');
         for (var i = 0; i < datos.rows.length; i++) {
           let notificacion = datos.rows.item(i);
 
@@ -87,10 +81,8 @@ export class FamiliarDao {
 
       }
 
-      console.log('devuelve las notificaciones');
       return notificaciones;
     }, err => {
-      console.log('Error: '+  JSON.stringify(err));
       return [];
     })
   }
@@ -99,12 +91,10 @@ export class FamiliarDao {
     let sentencia = `
       delete from notificaciones where id = ?`;
     let parametros = [id];
-    console.log('parametros' + JSON.stringify(parametros))
 
     return this.database.executeSql(sentencia, parametros).then( datos => {
       return datos;
     }, err => {
-      console.log('Error: ', err);
       return err;
     })
   }

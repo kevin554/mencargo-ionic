@@ -1,0 +1,68 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Grupos</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content esconder-boton-flotante>
+
+  <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
+  <ion-refresher (ionRefresh)="gestoActualizar($event)">
+    <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
+    <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="deslice para actualizar">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- LA LISTA DE GRUPOS -->
+  <ion-list margin-top>
+    <ion-item-sliding *ngFor="let grupo of grupos; let i = index" #slidingItem>
+      <!-- LA FORMA EN CÓMO SE VISUALIZARÁ EL GRUPO -->
+      <ion-item (tap)="cargarDatos(grupo)">
+        <p class="nombre">{{grupo.nombre}}</p>
+      </ion-item>
+
+      <ion-item-options side="right">
+        <!--DESLIZAR PARA EDITAR-->
+        <button ion-button icon-only (tap)="editar(i, slidingItem)">
+          <ion-icon name="cog"></ion-icon>
+        </button>
+        <!-- DESLIZAR PARA ELIMINAR -->
+        <button ion-button icon-only color="danger"
+            (click)="confirmarEliminarGrupo(i, slidingItem)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+  <!--SIMULO UN ELEMENTO MÁS, PARA QUE EL BOTON FLOTANTE NO OBSTRUYA LA VISTA-->
+  <ion-list no-lines>
+    <ion-item></ion-item>
+  </ion-list>
+
+  <!-- BOTON PARA AGREGAR GRUPO -->
+  <ion-fab bottom right margin-vertical>
+    <button ion-fab (click)="agregarGrupo()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
+  <empty-state *ngIf="noHayConexion && !grupos"
+      [img]="'assets/imgs/cloud-off.png'"
+      [error]="'hubo un error al establecer la conexion'"
+      [posibleSolucion]="'deslizá para actualizar'">
+  </empty-state>
+
+  <!-- EMPTY STATE PARA CUANDO LA LISTA DE AMIGOS ESTÁ VACIA -->
+  <empty-state *ngIf="grupos?.length === 0"
+      [img]="'assets/imgs/group-of-men.png'"
+      [error]="'Parece que no tenes ningun grupo registrado'"
+      [posibleSolucion]="'Agrega uno'">
+  </empty-state>
+
+</ion-content>

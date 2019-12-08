@@ -113,7 +113,7 @@ General Animations
 
 // FADE-IN DOWN ------------------------
 .fadein-down {
-    animation: fadein-down ease 1s;
+    animation: fadein-down ease 0.4s;
     animation-iteration-count: 1;
     transform-origin: 50% 50%;
     animation-fill-mode: forwards;
@@ -130,16 +130,9 @@ General Animations
     }
 }
 
-.ta-da-again {
-  animation: ta-da linear 1s;
-  animation-iteration-count: 1;
-  transform-origin: 50% 50%;
-}
-
-
 // TA-DA!! ------------------------
 .ta-da {
-  animation: ta-da linear 1s;
+  animation: ta-da linear 0.8s;
   animation-iteration-count: 1;
   transform-origin: 50% 50%;
 }
@@ -181,7 +174,7 @@ General Animations
 
 // SWING ------------------------
 .swing {
-    animation: swing linear 1s;
+    animation: swing linear 0.7s;
     animation-iteration-count: 1;
     transform-origin: 50% 0%;
 }

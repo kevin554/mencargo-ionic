@@ -93,7 +93,8 @@ export class MovimientoProvider {
   * el formato de 'fecha' y 'fechamodificacion' debe ser DD/MM/YYYY HH:MM:SS
   */
   public actualizar(id, idFamiliar, idInvitado, marca, color, placa, cantidad,
-      tiempo, fecha, observacion, adicionadoPor, fechaModificacion) {
+      tiempo, fecha, observacion, adicionadoPor, fechaModificacion, idUsuario,
+      codigo) {
     let link = URL + "/api/v1/update_invitacion";
 
     let objStr = `{
@@ -108,7 +109,9 @@ export class MovimientoProvider {
       "fecha": "${fecha}",
       "observacion": "${observacion}",
       "adicionadopor": "${adicionadoPor}",
-      "fechamodificacion": "${fechaModificacion}"
+      "fechamodificacion": "${fechaModificacion}",
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);
@@ -135,7 +138,7 @@ export class MovimientoProvider {
   */
   public insertarInvitacion(nombre:string, apellido, cantidad, tiempo, fecha, ci,
       expedicion, celular, placa, idFamiliar, idInvitado, observacion:string,
-      adicionadoPor, fechaAdicion, horaIngreso) {
+      adicionadoPor, fechaAdicion, horaIngreso, idUsuario, codigo) {
     let link = URL + "/api/v1/insert_invitado_invitacion";
 
     let objStr = `{
@@ -153,7 +156,9 @@ export class MovimientoProvider {
       "observacion": "${observacion}",
       "adicionadopor": "${adicionadoPor}",
       "fechaadicion": "${fechaAdicion}",
-      "ingreso": "${horaIngreso}"
+      "ingreso": "${horaIngreso}",
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);
@@ -165,8 +170,8 @@ export class MovimientoProvider {
   * (returns) el id del invitado (idvisita)
   */
   public insertarInvitacionDesdeFamiliar(nombre:string, apellido, cantidad, tiempo, fecha, ci,
-      expedicion, celular, placa, idFamiliar, idInvitado, observacion:string,
-      adicionadoPor, fechaAdicion, codigo) {
+      expedicion, celular, placa, idFamiliar, idInvitado, observacion:string, adicionadoPor:string,
+      fechaAdicion, codigo) {
     let link = URL + "/api/v1/insert_invitado_invitacion_familiar";
 
     let objStr = `{
@@ -218,11 +223,13 @@ export class MovimientoProvider {
     - La Invitacion es para Otra Fecha Adelante es para [d-m-Y]
     - La Invitacion ya fue Utilizada por [nombre invitado]
   */
-  public registrarIngreso(idInvitacion) {
+  public registrarIngreso(idInvitacion, idUsuario, codigo) {
     let link = URL + "/api/v1/insert_ingreso_invitado";
 
     let objStr = `{
-      "id": ${idInvitacion}
+      "id": ${idInvitacion},
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);
@@ -231,11 +238,13 @@ export class MovimientoProvider {
   /**
   * registra la fecha y hora de salida al condominio (de una invitacion)
   */
-  public registrarSalida(idInvitacion) {
+  public registrarSalida(idInvitacion, idUsuario, codigo) {
     let link = URL + "/api/v1/insert_salida_invitado";
 
     let objStr = `{
-      "id": ${idInvitacion}
+      "id": ${idInvitacion},
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);
@@ -251,11 +260,11 @@ export class MovimientoProvider {
   * id, vivienda, familia, invitado_nombre, invitado_ci, invitado_celular, marca,
   * fecha_invitacion, color, placa, hora_ingreso, hora_salida, observacion
   */
-  public getInvitadosDeCondominio(id, fechaInicio?, fechaFin?) {
+  public getInvitadosDeCondominio(idUsuario, codigo, id, fechaInicio?, fechaFin?) {
     if (!fechaInicio && !fechaFin) {
       return this.getInvitadosDeCondominioPorId(id);
     } else if (fechaInicio && !fechaFin) {
-      return this.getInvitadosDeCondominoPorFecha(id, fechaInicio);
+      return this.getInvitadosDeCondominoPorFecha(id, fechaInicio, idUsuario, codigo);
     } else if (fechaInicio && fechaFin) {
       return this.getInvitadosDeCondominioPorIntervalo(id, fechaInicio, fechaFin);
     }
@@ -271,12 +280,14 @@ export class MovimientoProvider {
     return this.http.post(link, objStr);
   }
 
-  private getInvitadosDeCondominoPorFecha(id, fecha) {
+  private getInvitadosDeCondominoPorFecha(id, fecha, idUsuario, codigo) {
     let link = URL + "/api/v1/listar_invitaciones_fecha";
 
     let objStr = `{
       "idcondominio": ${id},
-      "fecha": "${fecha}"
+      "fecha": "${fecha}",
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);
@@ -295,6 +306,7 @@ export class MovimientoProvider {
   }
 
   /*
+  el formato de la fecha debe ser DD/MM/YYYY HH:MM:SS
   listar_invitaciones_fecha
   id=v.id, vivienda=v.familia.vivienda.codificacion, familia=v.familia.nombre,
   invitado_nombre=v.invitado.nombre,
@@ -311,12 +323,15 @@ export class MovimientoProvider {
   si solo fecha_inicial contiene una fecha, buscas de esa fecha en particular
   si tanto fecha_inicial como fecha_final contienen una fecha, buscas en ese intervalo de fechas
   */
-  buscarVisitas(idCondominio, busqueda) {
+  buscarVisitas(idCondominio, busqueda, fecha, idUsuario, codigo) {
     let link = URL + "/api/v1/buscar_visita_invitacion";
 
     let objStr = `{
       "idcondominio": ${idCondominio},
-      "valor": "${busqueda}"
+      "valor": "${busqueda}",
+      "fecha": "${fecha}",
+      "codigo": "${codigo}",
+      "idusuario": ${idUsuario}
     }`;
 
     return this.http.post(link, objStr);

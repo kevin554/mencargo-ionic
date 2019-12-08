@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, Loading, LoadingController, NavController, NavParams } from 'ionic-angular';
 import { FamiliaProvider } from '../../providers/index.services'
 
 @IonicPage()
@@ -12,6 +12,8 @@ export class VerNotificacionPage {
   idCondominio:any;
   idMovimiento:any;
   objFamiliar:any;
+  private cargarPeticion:Loading;
+  private peticionEnCurso:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       public loadingCtrl: LoadingController, private _fp: FamiliaProvider) {
@@ -28,46 +30,46 @@ export class VerNotificacionPage {
     }
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad VerNotificacionPage');
+  /* cuando se presione la tecla atrás, es necesario finalizar con cualquier
+    peticion que se esté ejecutando */
+  ionViewWillLeave() {
+    if (this.cargarPeticion) {
+      this.cargarPeticion.dismiss();
+    }
   }
 
   public no() {
     // consumir un servicio para notificar al condominio que la visita no llego
-    let cargarPeticion = this.loadingCtrl.create({
-      content: 'notificando',
+    this.cargarPeticion = this.loadingCtrl.create({
+      content: 'Cargando la notificación',
       enableBackdropDismiss: true
     });
 
-    cargarPeticion.present();
+    this.cargarPeticion.present();
 
     let peticion = this._fp.notificarVisitaSinLlegada(
       this.objFamiliar.id,
       this.objFamiliar.codigo,
       this.idMovimiento,
       this.idCondominio
-    )
+    );
 
     /* si se cancela la espera antes de que finalice la peticion */
-    cargarPeticion.onDidDismiss( () => {
-      peticionEnCurso.unsubscribe();
+    this.cargarPeticion.onDidDismiss( () => {
+      this.peticionEnCurso.unsubscribe();
     });
 
-    let peticionEnCurso = peticion.map(resp => {
+    this.peticionEnCurso = peticion.map(resp => {
       let datos = resp.json();
 
-      console.log('la respuesta ' + JSON.stringify(datos));
-
-      if (datos.success) {
-
-      }
+      if (datos.success) { }
 
     }).subscribe(
       success => {
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
         this.navCtrl.setRoot('InicioPropietarioPage');
       }, err => {
-        cargarPeticion.dismiss();
+        this.cargarPeticion.dismiss();
       }
     );
   }

@@ -1,0 +1,52 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Destinatarios</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-item>
+    <ion-icon name="home" item-left></ion-icon>
+    <ion-label>(todas)</ion-label>
+    <ion-select [(ngModel)]="casasSeleccionadas" multiple="true">
+      <!--<ion-option (ionSelect)="allClickedCategories()">(Todas)</ion-option>-->
+      <ion-option *ngFor="let casa of casas" value="{{casa?.familia}}"
+                  [selected]="todasLasCasasSeleccionadas">
+        {{casa?.familia}}
+      </ion-option>
+      <!--<ion-option value="Duran">Duran</ion-option>-->
+      <!--<ion-option value="Mendez">Mendez</ion-option>-->
+      <!--<ion-option value="Ribera">Ribera</ion-option>-->
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="sad" item-left></ion-icon>
+    <ion-label>(todos)</ion-label>
+    <ion-select [(ngModel)]="usuarios" multiple="true">
+      <ion-option>Portero</ion-option>
+      <ion-option>Jefe de seguridad</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="person" item-left></ion-icon>
+    <ion-label>(todos)</ion-label>
+    <ion-select [(ngModel)]="familiares" multiple="true">
+      <ion-option>Oscar Serrano</ion-option>
+      <ion-option>Gabriela Ramallo</ion-option>
+      <ion-option>Alejandra Oyola</ion-option>
+      <ion-option>Dominick Sanchez</ion-option>
+      <ion-option>Belen Kushner</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-fab bottom right (tap)="siguiente()">
+    <button ion-fab><ion-icon name="arrow-forward"></ion-icon></button>
+  </ion-fab>
+
+</ion-content>

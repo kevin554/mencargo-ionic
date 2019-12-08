@@ -12,12 +12,12 @@
   <form [formGroup]="formuRegIng">
     <!-- viviendas -->
     <ion-item>
-      <ion-label>casa</ion-label>
+      <ion-label>Casa</ion-label>
       <ion-select formControlName="id_casa" cancelText="cancelar"
-          (ngModelChange)="cargarFamiliares($event)"
-          (tap)="cargarViviendas()">
+          (ngModelChange)="cargarFamiliares($event)" (tap)="cargarViviendas()">
         <ion-option *ngFor="let casa of listaCasas" [value]="casa.id">
-          {{casa.codificacion != 'N' ? casa.codificacion : ''}} - {{casa.familia}}
+          {{(casa?.codificacion != 'N') ? (casa?.codificacion) : ''}}
+          - {{casa?.familia}}
         </ion-option>
       </ion-select>
     </ion-item>
@@ -25,10 +25,9 @@
         [class.error]="formuRegIng.controls.id_casa.dirty">
       {{error_casa}}
     </p>
-
     <!-- familias -->
     <ion-item>
-      <ion-label>familiar</ion-label>
+      <ion-label>Familiar</ion-label>
       <ion-select formControlName="id_familiar" (tap)="cargarFamiliares()"
           (ngModelChange)="cargarContactos($event)" cancelText="cancelar">
         <ion-option *ngFor="let familiar of listaFamiliares"
@@ -41,25 +40,23 @@
         [class.error]="formuRegIng.controls.id_familiar.dirty">
       {{error_familia}}
     </p>
-
     <!-- CAMPO DE LA VISITA/INVITADO  -->
     <ion-item>
-      <ion-label>visita</ion-label>
+      <ion-label>Visita</ion-label>
       <ion-select formControlName="id_visita" cancelText="cancelar"
           (ngModelChange)="seleccionarNombreVisita($event)">
-        <ion-option value="0">SELECCION MANUAL</ion-option>
+        <ion-option value="0">SELECCIÓN MANUAL</ion-option>
         <ion-option *ngFor="let visita of listaVisitas" [value]="visita.id">
           {{visita.nombre}} {{visita.apellido}}
         </ion-option>
       </ion-select>
     </ion-item>
-
     <!-- CAMPO DEL NOMBRE -->
     <ion-item>
       <ion-icon name="contact" item-start></ion-icon>
-      <ion-label floating>nombre</ion-label>
+      <ion-label floating>Nombre</ion-label>
       <ion-input type="text" formControlName="nombre"
-          [attr.disabled]="formuRegIng.value.id_visita"
+          [disabled]="contactoPreexistenteSeleccionado"
           [class.invalid]="!formuRegIng.controls.nombre.valid &&
           (formuRegIng.controls.nombre.dirty || intentoIngresar)">
       </ion-input>
@@ -72,9 +69,9 @@
     <!-- CAMPO DEL APELLIDO -->
     <ion-item>
       <ion-icon name="contact" item-start></ion-icon>
-      <ion-label floating>apellidos</ion-label>
+      <ion-label floating>Apellidos</ion-label>
       <ion-input type="text" formControlName="apellido"
-          [attr.disabled]="formuRegIng.value.id_visita"
+          [disabled]="contactoPreexistenteSeleccionado"
           [class.invalid]="!formuRegIng.controls.apellido.valid &&
           (formuRegIng.controls.apellido.dirty || intentoIngresar)">
       </ion-input>
@@ -83,11 +80,11 @@
         [class.error]="formuRegIng.controls.apellido.dirty">
       {{error_apellido}}
     </p>
-
     <!-- CAMPO DEL CI -->
     <ion-item>
       <ion-icon name="create" item-start color="naranja"></ion-icon>
-      <ion-label floating>ci {{objConfiguracionCondominio.ci == "SI" ? '(obligatorio)' : '(opcional)' }}</ion-label>
+      <ion-label floating>CI {{objConfiguracionCondominio?.ci == "SI"
+          ? '(obligatorio)' : '(opcional)'}}</ion-label>
       <ion-input type="number" formControlName="ci"
           [class.invalid]="!formuRegIng.controls.ci.valid &&
           (formuRegIng.controls.ci.dirty || intentoIngresar)">
@@ -97,12 +94,13 @@
         [class.error]="formuRegIng.controls.ci.dirty">
       {{error_ci}}
     </p>
-
     <!-- CAMPO DE LA PLACA -->
     <ion-item>
       <ion-icon name="closed-captioning" item-start></ion-icon>
-      <ion-label floating>placa {{objConfiguracionCondominio.placa == "SI" ? '(obligatorio)' : '(opcional)' }}</ion-label>
+      <ion-label floating>Placa {{objConfiguracionCondominio?.placa == "SI"
+          ? '(obligatorio)' : '(opcional)'}}</ion-label>
       <ion-input type="text" formControlName="placa"
+           (ngModelChange)="aMayusculas($event)"
           [class.invalid]="!formuRegIng.controls.placa.valid &&
           (formuRegIng.controls.placa.dirty || intentoIngresar)">
       </ion-input>
@@ -111,11 +109,10 @@
         [class.error]="formuRegIng.controls.placa.dirty">
       {{error_placa}}
     </p>
-
     <!-- CAMPO DE LA OBSERVACION -->
     <ion-item>
       <ion-icon name="book" item-start color="primary"></ion-icon>
-      <ion-label floating>observaciones (opcional)</ion-label>
+      <ion-label floating>Observaciones (opcional)</ion-label>
       <ion-input type="text" formControlName="observaciones"
           [class.invalid]="!formuRegIng.controls.observaciones.valid &&
           (formuRegIng.controls.observaciones.dirty || intentoIngresar)">
@@ -133,7 +130,7 @@
 
 <ion-footer text-center no-border>
 
-  <button ion-button margin (click)="validarRegistroIngreso()" >
+  <button ion-button margin (tap)="validarRegistroIngreso()" >
     Guardar
   </button>
 

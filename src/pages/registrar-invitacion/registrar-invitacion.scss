@@ -8,6 +8,14 @@ page-registrar-invitacion {
     max-width: 100%;
   }
 
+  p.error {
+    text-align: center;
+  }
+
+  .item-inner {
+    padding-right: 0px !important;
+  }
+
   //
   // ion-fab > button[ion-fab] {
   //   background: transparent;

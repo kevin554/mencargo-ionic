@@ -1,33 +1,50 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title>Crear evento</ion-title>
+    <ion-title>{{titulo}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content >
+<ion-content>
 
   <form [formGroup]="formuRegEv" >
+    <!-- EL NOMBRE DEL EVENTO -->
     <ion-item padding-horizontal>
       <ion-label floating>Nombre del evento:</ion-label>
       <ion-input type="text" formControlName="nombre"></ion-input>
     </ion-item>
-
+    <!-- LA DESCRIPCION DEL EVENTO -->
     <ion-item padding-horizontal>
+      <ion-label floating>Descripción:</ion-label>
+      <ion-input type="text" formControlName="descripcion"></ion-input>
+    </ion-item>
+    <!-- LA FECHA DE INICIO DEL EVENTO -->
+    <ion-item padding-horizontal *ngIf="!objEvento">
       <ion-icon name="calendar" item-start></ion-icon>
-      <ion-datetime formControlName="inicio"
-           min="2018"
-          displayFormat="DD de MMMM del YYYY" pickerFormat="DD MMM YYYY"
-          doneText="listo" cancelText="cancelar">
+      <ion-datetime formControlName="inicio" [min]="util.getFechaNormal()"
+          doneText="listo" cancelText="cancelar"
+          displayFormat="DD de MMMM del YYYY" pickerFormat="DD MMM YYYY">
       </ion-datetime>
     </ion-item>
   </form>
 
+  <!-- BOTON PARA DAR POR FINALIZADO UN EVENTO -->
+  <button ion-button color="danger" (tap)="confirmarFinalizarEvento()"
+      class="centrar-hor" margin-vertical *ngIf="objEvento">
+    Finalizar evento
+  </button>
+
+  <!-- PARA VOLVER A GENERAR EL CÓDIGO QR -->
+  <button ion-button (tap)="generarInvitacion()" class="centrar-hor"
+      margin-vertical *ngIf="objEvento">
+    Generar invitación
+  </button>
+
   <ion-fab right bottom>
     <button ion-fab (click)="validarFormulario()">
-      <ion-icon name="arrow-forward"></ion-icon>
+      <ion-icon [name]="objEvento ? 'checkmark' : 'arrow-forward'"></ion-icon>
     </button>
   </ion-fab>
 

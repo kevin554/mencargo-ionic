@@ -5,28 +5,26 @@
 </ion-header>
 
 
-<ion-content >
+<ion-content>
 
     <centrar-componente>
-
       <ion-card>
-        <ion-card-header text-wrap text-center *ngIf="nombreInvitado" class="destinatario-qr">
+        <ion-card-header text-wrap text-center *ngIf="nombreInvitado">
           Esta invitación puede ser utilizada sólo por {{nombreInvitado}}
         </ion-card-header>
 
-        <ion-card-header text-wrap text-center *ngIf="nombreEvento" class="destinatario-qr">
+        <ion-card-header text-wrap text-center *ngIf="nombreEvento">
           {{nombreEvento}}
         </ion-card-header>
-
+        
         <ion-card-content>
           <img [src]="codigoGenerado" (click)="compartir()">
           <p text-center *ngIf="sePuedeCompartir" class="texto-compartir">
-            toca para compartir
+            Toca para compartir
           </p>
         </ion-card-content>
       </ion-card>
       <img src="assets/imgs/mencargo.png" alt="mencargo" style="width: 25%">
-
     </centrar-componente>
 
 </ion-content>

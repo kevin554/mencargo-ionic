@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, ModalController, NavController, NavParams, Platform } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-
-import { InvitadoProvider, MovimientoProvider, UtilServiceProvider ,InvitadoDao } from "../../providers/index.services";
+import { InvitadoProvider, MovimientoProvider, UtilServiceProvider, UsuarioProvider, InvitadoDao } from "../../providers/index.services";
 
 @IonicPage()
 @Component({
@@ -13,17 +12,16 @@ export class RegistrarInvitacionPage {
 
   private formuRegInv:FormGroup;
   private detallado:boolean; // para expandir el formulario
-  private error_nombre:string;
-  private error_apellido:string;
-  private error_cantidad:string;
-  private error_tiempo:string;
-  private error_ci:string;
-  private error_celular:string;
-  private error_placa:string;
+  public error_nombre:string;
+  public error_apellido:string;
+  public error_cantidad:string;
+  public error_tiempo:string;
+  public error_ci:string;
+  public error_celular:string;
+  public error_placa:string;
   private intentoIngresar:boolean;
 
-objFamiliar:any;
-  private idFamiliar:any;
+  objFamiliar:any;
   private soloRegistrarAmigo:any; // para omitir el dato de la placa
   private amigos:any; // para actualizar la lista de amigos al crear un amigo
   private objAmigo:any;
@@ -32,12 +30,13 @@ objFamiliar:any;
       public formBuilder: FormBuilder, public loadingCtrl: LoadingController,
       private _mp: MovimientoProvider, private util: UtilServiceProvider,
       private _ip: InvitadoProvider, private invitadoDao: InvitadoDao,
-      private platform: Platform) {
+      private platform: Platform, private _up: UsuarioProvider,
+      public modalCtrl: ModalController, public alertCtrl: AlertController) {
     this.formuRegInv = this.formBuilder.group({
       fecha: [''],
-      nombre: ['', Validators.compose([Validators.required]) ],
+      nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      cantidad: ['', Validators.compose([Validators.required])],
+      cantidad: ['', Validators.required],
       tiempo: [''],
       ci: [''],
       expedicion: ['SC'],
@@ -48,10 +47,6 @@ objFamiliar:any;
     this.formuRegInv.get('fecha').setValue(this.util.getFechaNormal());
     this.formuRegInv.get('cantidad').setValue(24);
     this.formuRegInv.get('tiempo').setValue("horas");
-
-    if (navParams.get("idFamiliar")) {
-      this.idFamiliar = navParams.get("idFamiliar");
-    }
 
     if (navParams.get("familiar")) {
       this.objFamiliar = navParams.get("familiar");
@@ -68,6 +63,35 @@ objFamiliar:any;
 
     if (navParams.get("soloRegistrarAmigo")) {
       this.soloRegistrarAmigo = navParams.get("soloRegistrarAmigo");
+    }
+  }
+
+  ionViewDidLoad() {
+    if (this.soloRegistrarAmigo) {
+      return;
+    }
+
+    /* la primera vez que habra la app, debe mostrarse el tutorial */
+    let seEjecutoAntes = this._up.getSeEjecutoAntesEnviarInvitacion();
+
+    if (!seEjecutoAntes) {
+      let param = {
+        tutorial: "enviar invitacion"
+      }
+
+      let config = {
+        showBackdrop: true,
+        enableBackdropDismiss: true
+      }
+
+      let profileModal = this.modalCtrl.create("TutorialPage", param, config);
+
+      profileModal.onDidDismiss( datos => {
+        /* se cerró el tutorial */
+        this._up.setSeEjecutoAntesEnviarInvitacion(true);
+      });
+
+      profileModal.present();
     }
   }
 
@@ -90,7 +114,7 @@ objFamiliar:any;
     }
 
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'guardando contacto',
+      content: 'Guardando contacto',
       enableBackdropDismiss: true
     });
 
@@ -129,20 +153,22 @@ objFamiliar:any;
 
           this.amigos.push(obj);
 
-          // if (this.platform.is("cordova")) {
-          //   let objAInsertar = {
-          //     id: obj.id,
-          //     nombre: obj.nombre,
-          //     apellido: obj.apellido,
-          //     ci: obj.ci,
-          //     expedicion: "SC",
-          //     celular: obj.celular,
-          //     fkfamilia: obj.fkfamilia,
-          //     fkcondominio: this.objFamiliar.condominio
-          //   }
-          //
-          //   this.invitadoDao.insertar(objAInsertar);
-          // }
+          this.util.ordenarPorMultiplesCampos(this.amigos, "nombre", "apellido");
+
+          if (this.platform.is("cordova")) {
+            let objAInsertar = {
+              id: obj.id,
+              nombre: obj.nombre,
+              apellido: obj.apellido,
+              ci: obj.ci,
+              expedicion: "SC",
+              celular: obj.celular,
+              fkfamilia: obj.fkfamilia,
+              fkcondominio: this.objFamiliar.condominio
+            }
+
+            this.invitadoDao.insertar(objAInsertar);
+          }
 
         } else {
           this.objAmigo.nombre = obj.nombre;
@@ -150,20 +176,20 @@ objFamiliar:any;
           this.objAmigo.ci = obj.ci;
           this.objAmigo.celular = obj.celular;
 
-          // if (this.platform.is("cordova")) {
-          //   let objAInsertar = {
-          //     id: this.objAmigo.id,
-          //     nombre: this.objAmigo.nombre,
-          //     apellido: this.objAmigo.apellido,
-          //     ci: this.objAmigo.ci,
-          //     expedicion: "SC",
-          //     celular: this.objAmigo.celular,
-          //     fkfamilia: this.objAmigo.fkfamilia,
-          //     fkcondominio: this.objAmigo.fkcondominio
-          //   }
-          //
-          //   this.invitadoDao.insertar(objAInsertar);
-          // }
+          if (this.platform.is("cordova")) {
+            let objAInsertar = {
+              id: this.objAmigo.id,
+              nombre: this.objAmigo.nombre,
+              apellido: this.objAmigo.apellido,
+              ci: this.objAmigo.ci,
+              expedicion: "SC",
+              celular: this.objAmigo.celular,
+              fkfamilia: this.objAmigo.fkfamilia,
+              fkcondominio: this.objAmigo.fkcondominio
+            }
+
+            this.invitadoDao.insertar(objAInsertar);
+          }
 
         }
 
@@ -185,32 +211,61 @@ objFamiliar:any;
   }
 
   public enviarInvitacion() {
-    this.insertarInvitacion();
-  }
-
-  private insertarInvitacion() {
     let obj = this.getInvitacionDeFormulario();
 
     if (!obj) {
       return;
     }
 
+    let alert = this.alertCtrl.create({
+      title: '¿Desea guardar este contacto?',
+      message: '',
+      buttons: [
+        {
+          text: 'No',
+          handler: () => {
+            this.insertarInvitacion(obj, false);
+          }
+        },
+        {
+          text: 'Si',
+          handler: () => {
+            this.insertarInvitacion(obj, true);
+          }
+        }
+      ]
+    });
+
+    alert.present();
+  }
+
+  private insertarInvitacion(obj:ModeloInvitacion, agregarComoContacto:boolean) {
     let cargarPeticion = this.loadingCtrl.create({
-      content: 'generando invitacion',
+      content: 'Generando invitación',
       enableBackdropDismiss: true
     });
 
     cargarPeticion.present();
 
-    let adicionadoPor = "";
     let observacion = "";
-    let horaIngreso = "";
 
-    let peticion = this._mp.insertarInvitacionDesdeFamiliar(obj.nombre, obj.apellido,
+    let peticion = this._mp.insertarInvitacionDesdeFamiliar(
+      obj.nombre,
+      obj.apellido,
       obj.cantidad,
-      obj.tiempo, obj.fecha, obj.ci, obj.expedicion, obj.celular, obj.placa,
-      obj.idFamiliar, obj.idInvitado, observacion, adicionadoPor,
-      this.util.getFechaActual(), this.objFamiliar.codigo);
+      obj.tiempo,
+      obj.fecha,
+      obj.ci,
+      obj.expedicion,
+      obj.celular,
+      obj.placa,
+      obj.idFamiliar,
+      obj.idInvitado,
+      observacion,
+      agregarComoContacto ? "Familiar" : "",
+      this.util.getFechaActual(),
+      this.objFamiliar.codigo
+    );
 
     /* si se cancela antes de que se complete la peticion */
     cargarPeticion.onDidDismiss( () => {
@@ -231,6 +286,22 @@ objFamiliar:any;
         }
 
         this.navCtrl.push('CodigoInvitacionPage', parametros);
+
+        if (this.platform.is("cordova")) {
+          let objAInsertar = {
+            id: datos.idvisita,
+            nombre: obj.nombre,
+            apellido: obj.apellido,
+            ci: obj.ci,
+            expedicion: obj.expedicion,
+            celular: obj.celular,
+            fkfamilia: this.objFamiliar.id,
+            fkcondominio: this.objFamiliar.condominio
+          }
+
+          this.agregarInvitacionLocal(objAInsertar);
+        }
+
       } else {
         let mensaje:string = datos.message;
 
@@ -261,102 +332,94 @@ objFamiliar:any;
 
     if (!this.formuRegInv.valid) {
       this.intentoIngresar = true;
-    } else {
-      let fecha = this.formuRegInv.value.fecha;
-      let nombre = this.formuRegInv.value.nombre.trim();
-      let apellido = this.formuRegInv.value.apellido.trim();
-      let ci = this.formuRegInv.value.ci;
-      let expedicion = this.formuRegInv.value.expedicion;
-      let celular = this.formuRegInv.value.celular;
-      let placa = this.formuRegInv.value.placa.trim();
-      let cantidad = 24;//this.formuRegInv.value.cantidad;
-      let tiempo = "horas";//this.formuRegInv.value.tiempo;
+    }
 
-      this.intentoIngresar = false;
+    let fecha = this.formuRegInv.value.fecha;
+    let nombre = this.formuRegInv.value.nombre.trim();
+    let apellido = this.formuRegInv.value.apellido.trim();
+    let ci = this.formuRegInv.value.ci;
+    let expedicion = this.formuRegInv.value.expedicion;
+    let celular = this.formuRegInv.value.celular;
+    let placa = this.formuRegInv.value.placa.trim();
+    let cantidad = 24;//this.formuRegInv.value.cantidad;
+    let tiempo = "horas";//this.formuRegInv.value.tiempo;
 
-      if (!nombre) {
-        this.formuRegInv.controls['nombre'].markAsDirty();
-        this.error_nombre = 'el nombre no puede estar vacio';
+    this.intentoIngresar = false;
 
-        this.intentoIngresar = true;
-      }
+    if (!nombre) {
+      this.formuRegInv.controls['nombre'].markAsDirty();
+      this.error_nombre = "El nombre no puede estar vacío.";
 
-      if (!apellido) {
-        this.formuRegInv.controls['apellido'].markAsDirty();
-        this.error_apellido = 'el apellido no puede estar vacio';
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    if (!apellido) {
+      this.formuRegInv.controls['apellido'].markAsDirty();
+      this.error_apellido = "El apellido no puede estar vacío.";
 
-      if (!ci) {
-        ci = 0;
-      }
+      this.intentoIngresar = true;
+    }
 
-      if (!celular) {
-        celular = 0;
-      }
+    if (!ci) {
+      ci = 0;
+    }
 
-      let expNombre = new RegExp("^[a-zA-Z ñÑáéíóúÁÉÍÓÚ.]{1,50}$");
-      if (!expNombre.test(nombre)) {
-        this.formuRegInv.controls['nombre'].markAsDirty();
-        this.error_nombre = `el nombre solo puede tener entre 1 a 50 letras`;
+    if (!celular) {
+      celular = 0;
+    }
 
-        this.intentoIngresar = true;
-      }
+    let expNombre = new RegExp("^[a-zA-Z ñÑáéíóúÁÉÍÓÚ.]{1,50}$");
+    if (nombre && !expNombre.test(nombre)) {
+      this.formuRegInv.controls['nombre'].markAsDirty();
+      this.error_nombre = `El nombre sólo puede tener entre 1 a 50 letras.`;
 
-      if (!expNombre.test(apellido)) {
-        this.formuRegInv.controls['apellido'].markAsDirty();
-        this.error_apellido = `el apellido solo puede tener entre 1 a 50 letras`;
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    if (apellido && !expNombre.test(apellido)) {
+      this.formuRegInv.controls['apellido'].markAsDirty();
+      this.error_apellido = `El apellido sólo puede tener entre 1 a 50 letras.`;
 
-      let regExpNumerica = new RegExp("[0-9]+$");
-      if (ci && !regExpNumerica.test(ci)) {
-        this.formuRegInv.controls['ci'].markAsDirty();
-        this.error_ci = `este campo solo admite numeros`;
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    let regExpNumerica = new RegExp("[0-9]+$");
+    if (ci && !regExpNumerica.test(ci)) {
+      this.formuRegInv.controls['ci'].markAsDirty();
+      this.error_ci = `Este campo solo admite numeros.`;
 
-      if (celular && !regExpNumerica.test(celular)) {
-        this.formuRegInv.controls['celular'].markAsDirty();
-        this.error_celular = `este campo solo admite numeros`;
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    if (celular && !regExpNumerica.test(celular)) {
+      this.formuRegInv.controls['celular'].markAsDirty();
+      this.error_celular = `Este campo solo admite numeros`;
 
-      // if (!cantidad) {
-      //   this.formuRegInv.controls['cantidad'].markAsDirty();
-      //   this.error_cantidad = `debe especificar la duracion de la invitacion`;
-      //
-      //   this.intentoIngresar = true;
-      // }
+      this.intentoIngresar = true;
+    }
 
-      if (this.intentoIngresar) {
-        return;
-      }
+    if (this.intentoIngresar) {
+      return;
+    }
 
-      let id = 0;
-      fecha = this.util.getFechaFormateada(fecha);
-      // fecha += this.util.getFechaActual().substring(10, 19)
+    let id = 0;
+    fecha = this.util.getFechaFormateada(fecha);
 
-      let invitacion:ModeloInvitacion = {
-        idInvitado: id,
-        nombre: nombre,
-        apellido: apellido,
-        cantidad: cantidad,
-        tiempo: tiempo,
-        fecha: fecha,
-        ci: ci,
-        expedicion: expedicion,
-        celular: celular,
-        placa: placa,
-        idFamiliar: this.idFamiliar
-      }
+    let invitacion:ModeloInvitacion = {
+      idInvitado: id,
+      nombre: nombre,
+      apellido: apellido,
+      cantidad: cantidad,
+      tiempo: tiempo,
+      fecha: fecha,
+      ci: ci,
+      expedicion: expedicion,
+      celular: celular,
+      placa: placa,
+      idFamiliar: this.objFamiliar.id // this.idFamiliar
+    }
 
-      return invitacion;
-    } // formulario validado
+    return invitacion;
   }
 
   private getInvitadoDeFormulario() {
@@ -370,84 +433,99 @@ objFamiliar:any;
 
     if (!this.formuRegInv.valid && cantidad) {
       this.intentoIngresar = true;
-    } else {
-      let nombre = this.formuRegInv.value.nombre.trim();
-      let apellido = this.formuRegInv.value.apellido.trim();
-      let ci = this.formuRegInv.value.ci;
-      let celular = this.formuRegInv.value.celular;
+    }
 
-      this.intentoIngresar = false;
+    let nombre = this.formuRegInv.value.nombre.trim();
+    let apellido = this.formuRegInv.value.apellido.trim();
+    let ci = this.formuRegInv.value.ci;
+    let celular = this.formuRegInv.value.celular;
 
-      if (!nombre) {
-        this.formuRegInv.controls['nombre'].markAsDirty();
-        this.error_nombre = 'el nombre no puede estar vacio';
+    this.intentoIngresar = false;
 
-        this.intentoIngresar = true;
-      }
+    if (!nombre) {
+      this.formuRegInv.controls['nombre'].markAsDirty();
+      this.error_nombre = "El nombre no puede estar vacío.";
 
-      if (!apellido) {
-        this.formuRegInv.controls['apellido'].markAsDirty();
-        this.error_apellido = 'el apellido no puede estar vacio';
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    if (!apellido) {
+      this.formuRegInv.controls['apellido'].markAsDirty();
+      this.error_apellido = "El apellido no puede estar vacío.";
 
-      if (!ci) {
-        ci = 0;
-      }
+      this.intentoIngresar = true;
+    }
 
-      if (!celular) {
-        celular = 0;
-      }
+    if (!ci) {
+      ci = 0;
+    }
 
-      let expNombre = new RegExp("^[a-zA-Z ñÑáéíóúÁÉÍÓÚ]{1,50}$");
-      if (!expNombre.test(nombre)) {
-        this.formuRegInv.controls['nombre'].markAsDirty();
-        this.error_nombre = `el nombre solo puede tener entre 1 a 50 letras`;
+    if (!celular) {
+      celular = 0;
+    }
 
-        this.intentoIngresar = true;
-      }
+    let expNombre = new RegExp("^[a-zA-Z ñÑáéíóúÁÉÍÓÚ]{1,50}$");
+    if (!expNombre.test(nombre)) {
+      this.formuRegInv.controls['nombre'].markAsDirty();
+      this.error_nombre = `El nombre sólo puede tener entre 1 a 50 letras.`;
 
-      if (!expNombre.test(apellido)) {
-        this.formuRegInv.controls['apellido'].markAsDirty();
-        this.error_apellido = `el apellido solo puede tener entre 1 a 50 letras`;
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    if (!expNombre.test(apellido)) {
+      this.formuRegInv.controls['apellido'].markAsDirty();
+      this.error_apellido = `El apellido sólo puede tener entre 1 a 50 letras.`;
 
-      let regExpNumerica = new RegExp("[0-9]+$");
-      if (ci && !regExpNumerica.test(ci)) {
-        this.formuRegInv.controls['ci'].markAsDirty();
-        this.error_ci = `este campo solo admite numeros`;
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    let regExpNumerica = new RegExp("[0-9]+$");
+    if (ci && !regExpNumerica.test(ci)) {
+      this.formuRegInv.controls['ci'].markAsDirty();
+      this.error_ci = `Este campo solo admite numeros`;
 
-      if (celular && !regExpNumerica.test(celular)) {
-        this.formuRegInv.controls['celular'].markAsDirty();
-        this.error_celular = `este campo solo admite numeros`;
+      this.intentoIngresar = true;
+    }
 
-        this.intentoIngresar = true;
-      }
+    if (celular && !regExpNumerica.test(celular)) {
+      this.formuRegInv.controls['celular'].markAsDirty();
+      this.error_celular = `Este campo solo admite numeros`;
 
-      if (this.intentoIngresar) {
-        return;
-      }
+      this.intentoIngresar = true;
+    }
 
-      let id = this.objAmigo ? this.objAmigo.id : 0;
+    if (this.intentoIngresar) {
+      return;
+    }
 
-      let invitado = {
-        id: id,
-        nombre: nombre,
-        apellido: apellido,
-        ci: ci,
-        // expedicion: expedicion,
-        celular: celular,
-        fkfamilia: this.objFamiliar.id
-      }
+    let id = this.objAmigo ? this.objAmigo.id : 0;
 
-      return invitado;
-    } // formulario validado
+    let invitado = {
+      id: id,
+      nombre: nombre,
+      apellido: apellido,
+      ci: ci,
+      celular: celular,
+      fkfamilia: this.objFamiliar.id
+    }
+
+    return invitado;
+  }
+
+  private agregarInvitacionLocal(invitacion) {
+    /* el objeto listo para insertar en local */
+    let obj = {
+      id: invitacion.id,
+      nombre: invitacion.nombre,
+      apellido: invitacion.apellido,
+      ci: invitacion.ci,
+      expedicion: invitacion.expedicion,
+      celular: invitacion.celular,
+      fkfamilia: invitacion.fkfamilia,
+      fkcondominio: invitacion.fkcondominio
+    }
+
+    this.invitadoDao.insertar(obj);
   }
 
 }

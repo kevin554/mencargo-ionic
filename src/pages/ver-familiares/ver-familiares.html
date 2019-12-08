@@ -17,8 +17,8 @@
   <!-- EMPTY STATE PARA LA FALTA DE CONEXION -->
   <empty-state *ngIf="noHayConexion && (!familiares && !cantidadQrDisponibles)"
       [img]="'assets/imgs/cloud-off.png'"
-      [error]="'parece que no tenés conexion'"
-      [posibleSolucion]="'deslizá desde arriba para actualizar'">
+      [error]="'Parece que no tenés conexión'"
+      [posibleSolucion]="'Deslizá desde arriba para actualizar'">
   </empty-state>
 
   <!-- DESLIZAR HACIA ABAJO PARA ACTUALIZAR -->
@@ -26,7 +26,7 @@
     <!-- LA ANIMACION QUE SE MUESTRA AL DESLIZAR -->
     <ion-refresher-content
         pullingIcon="arrow-dropdown"
-        pullingText="deslice para actualizar">
+        pullingText="Deslice para actualizar">
     </ion-refresher-content>
   </ion-refresher>
 
@@ -34,10 +34,11 @@
     <ion-item-sliding *ngFor="let familiar of familiares; let i = index">
       <ion-item>
         <ion-icon name="person" item-start [color]="familiar.activo ? 'celeste'
-            : 'dark'">
+            : ''">
         </ion-icon>
         <h2 class="fam-nombre">{{familiar.nombre}} {{familiar.apellido}}</h2>
-        <ion-icon name="settings" item-end (click)="desplegarMenu($event, familiar)"></ion-icon>
+        <ion-icon name="settings" item-end (tap)="desplegarMenu($event, familiar)">
+        </ion-icon>
       </ion-item>
 
       <!-- deslizar para eliminar -->
